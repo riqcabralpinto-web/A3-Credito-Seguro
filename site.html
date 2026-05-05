@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crédito Seguro | Prevenção contra Fraudes 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --netflix-red: #E50914;
+            --dark-bg: #141414;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--dark-bg);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Estilo Netflix - Glassmorphism e Hover */
+        .glass-nav {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .netflix-card {
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            background: #1f1f1f;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .netflix-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--netflix-red);
+        }
+
+        .btn-netflix {
+            background-color: var(--netflix-red);
+            transition: all 0.3s ease;
+        }
+
+        .btn-netflix:hover {
+            background-color: #f6121d;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
+        }
+
+        /* Efeito de Movimento no Fundo (Hero) */
+        .hero-bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .hero-bg-image {
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(to bottom, rgba(20,20,20,0.4) 0%, rgba(20,20,20,1) 90%), 
+                              url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1920');
+            background-size: cover;
+            background-position: center;
+            animation: slowZoom 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+
+        /* Sistema de Estrelas Interativo */
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            gap: 8px;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            cursor: pointer;
+            font-size: 2rem;
+            color: #333;
+            transition: color 0.2s ease;
+        }
+        .star-rating label:before { content: '★'; }
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: var(--netflix-red);
+        }
+
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #141414; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--netflix-red); }
+
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .audio-player {
+            background: #1f1f1f;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        audio::-webkit-media-controls-panel {
+            background-color: #1f1f1f;
+        }
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display,
+        audio::-webkit-media-controls-mute-button,
+        audio::-webkit-media-controls-volume-slider {
+            filter: invert(1);
+        }
+
+        /* Classes para navegação de página */
+        .page-content { display: block; }
+        .hidden-page { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Menu de Navegação -->
+    <nav class="glass-nav fixed w-full z-50 py-4 px-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="showMainPage()">
+                <img src="imagem/cadeado.png" alt="Logo Crédito Seguro" class="w-[100px] h-[100px] object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3064/3064155.png'">
+                <div class="text-2xl font-bold text-red-600 tracking-tighter uppercase">Crédito Seguro</div>
+            </div>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-semibold uppercase tracking-wider">
+                <a href="#home" onclick="showMainPage()" class="hover:text-red-600 transition">Início</a>
+                <a href="#sobre" onclick="showMainPage()" class="hover:text-red-600 transition">Sobre</a>
+                <a href="#prevenção" onclick="showMainPage()" class="hover:text-red-600 transition">Prevenção</a>
+                <a href="#multimedia" onclick="showMainPage()" class="hover:text-red-600 transition">Multimídia</a>
+                <!-- Cadastro como Botão -->
+                <button onclick="showRegisterPage()" class="btn-netflix px-6 py-2 rounded text-white font-bold transition">Cadastro</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL (Página 1) -->
+    <main id="main-view" class="page-content">
+        <!-- Hero Section -->
+        <section id="home" class="relative h-screen flex items-center justify-center px-6 overflow-hidden">
+            <div class="hero-bg-container">
+                <div class="hero-bg-image"></div>
+            </div>
+            <div class="relative z-10 text-center max-w-4xl animate-fade-in">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight drop-shadow-2xl">Não seja o próximo alvo.</h1>
+                <p class="text-lg md:text-xl text-gray-200 mb-10 drop-shadow-md font-medium">
+                    O guia essencial para identificar fraudes de crédito em 2026. <br class="hidden md:block"> Proteja o seu património contra o golpe da taxa antecipada.
+                </p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <a href="#prevenção" class="btn-netflix px-8 py-4 rounded font-bold uppercase tracking-widest text-sm">Ver Guia de Prevenção</a>
+                    <a href="#sobre" class="bg-black/50 backdrop-blur-sm hover:bg-zinc-800/80 px-8 py-4 rounded font-bold uppercase tracking-widest text-sm transition border border-white/20">Nossa Missão</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secção Sobre -->
+        <section id="sobre" class="py-24 px-6 bg-zinc-950">
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                <div class="relative rounded-xl overflow-hidden shadow-2xl group">
+                    <div class="absolute inset-0 bg-red-600/10 group-hover:bg-transparent transition duration-500"></div>
+                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200" alt="" class="opacity-80 group-hover:opacity-100 transition duration-700 scale-105 group-hover:scale-100">
+                </div>
+                <div>
+                    <h2 class="text-red-600 font-bold uppercase tracking-widest text-sm mb-4">A Realidade em 2026</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold mb-6">O que é o Crédito Seguro?</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        No Brasil, um tipo de fraude financeira que persiste há muito tempo e continua bastante disseminado em 2026 é o <strong>golpe do empréstimo</strong>, também conhecido como golpe da taxa antecipada ou empréstimo falso.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        O <strong>Crédito Seguro</strong> surge como uma iniciativa para conscientizar e proteger a população contra esse tipo de crime, que se aproveita principalmente de pessoas que precisam de dinheiro com urgência, possuem restrições no nome ou enfrentam dificuldades financeiras.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secção Prevenção -->
+        <section id="prevenção" class="py-24 px-6">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold mb-4">Manual de Sobrevivência Financeira</h2>
+                    <p class="text-gray-400">Entenda a anatomia do golpe e proteja-se.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+                    <div class="netflix-card p-8 rounded-xl">
+                        <div class="text-red-600 font-bold text-5xl mb-4 opacity-30">01</div>
+                        <h4 class="font-bold mb-3 uppercase text-sm tracking-wider">Primeiro contacto</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed">Um golpista entra em contacto consigo (WhatsApp, SMS, redes sociais) fingindo ser de um banco famoso. Instituições confiáveis não fazem abordagens agressivas.</p>
+                    </div>
+                    <div class="netflix-card p-8 rounded-xl">
+                        <div class="text-red-600 font-bold text-5xl mb-4 opacity-30">02</div>
+                        <h4 class="font-bold mb-3 uppercase text-sm tracking-wider">Proposta tentadora</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed">Ofertas difíceis de recusar: aprovação garantida, juros extremamente baixos e libertação rápida no mesmo dia.</p>
+                    </div>
+                    <div class="netflix-card p-8 rounded-xl">
+                        <div class="text-red-600 font-bold text-5xl mb-4 opacity-30">03</div>
+                        <h4 class="font-bold mb-3 uppercase text-sm tracking-wider">A fraude revela-se</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed">Exigem um pagamento antecipado (IOF, Taxa administrativa, Seguro) para "libertar" o valor. <strong>Isso é sempre golpe.</strong></p>
+                    </div>
+                    <div class="netflix-card p-8 rounded-xl">
+                        <div class="text-red-600 font-bold text-5xl mb-4 opacity-30">04</div>
+                        <h4 class="font-bold mb-3 uppercase text-sm tracking-wider">Após o pagamento</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed">Os criminosos desaparecem, pedem mais taxas infinitas ou até fazem ameaças para tentar extorquir mais dinheiro.</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-zinc-900/50 p-8 rounded-2xl border border-white/5">
+                        <h4 class="font-bold text-xl mb-6 flex items-center gap-2"><i data-lucide="shield" class="text-red-600"></i> Como se Proteger</h4>
+                        <ul class="space-y-4 text-sm text-gray-400">
+                            <li class="flex items-start gap-3"><i data-lucide="x-circle" class="text-red-600 w-5 h-5 shrink-0"></i> Nunca pague taxas antecipadas</li>
+                            <li class="flex items-start gap-3"><i data-lucide="check-circle" class="text-green-600 w-5 h-5 shrink-0"></i> Use apenas canais oficiais</li>
+                            <li class="flex items-start gap-3"><i data-lucide="alert-triangle" class="text-yellow-600 w-5 h-5 shrink-0"></i> Pesquise antes de contratar</li>
+                        </ul>
+                    </div>
+                    <div class="bg-zinc-900/50 p-8 rounded-2xl border border-white/5">
+                        <h4 class="font-bold text-xl mb-6 flex items-center gap-2"><i data-lucide="frown" class="text-red-600"></i> Impactos e Abalo</h4>
+                        <p class="text-sm text-gray-400 mb-4">Ansiedade, vergonha e insegurança são marcas profundas. Idosos são as maiores vítimas.</p>
+                        <div class="text-xs font-bold text-red-500 uppercase">Dívidas em seu nome • Nome Negativado</div>
+                    </div>
+                    <div class="bg-zinc-900/50 p-8 rounded-2xl border border-red-600/20">
+                        <h4 class="font-bold text-xl mb-6 flex items-center gap-2"><i data-lucide="life-buoy" class="text-red-600"></i> Em Caso de Golpe</h4>
+                        <p class="text-sm text-gray-400 mb-6">Interrompa o contacto, não pague nada e registe um boletim de ocorrência imediatamente.</p>
+                        <a href="https://www.consumidor.gov.br" target="_blank" class="block text-center bg-zinc-800 py-3 rounded text-xs font-bold hover:bg-zinc-700 transition uppercase">Denunciar agora</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Biblioteca Multimédia -->
+        <section id="multimedia" class="py-24 px-6 bg-zinc-950 border-t border-white/5">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold mb-4 uppercase tracking-widest">Biblioteca Multimídia</h2>
+                    <p class="text-gray-400">Assista e ouça depoimentos reais sobre como as fraudes acontecem.</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-12 items-start">
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i data-lucide="play-circle" class="text-red-600"></i>
+                            <h4 class="font-bold uppercase tracking-wider text-sm text-gray-300">Vídeo Educativo: Como identificar burlas</h4>
+                        </div>
+                        <div class="video-container shadow-2xl">
+                            <video controls class="rounded-lg">
+                                <source src="video/miranha.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i data-lucide="mic" class="text-red-600"></i>
+                            <h4 class="font-bold uppercase tracking-wider text-sm text-gray-300">Podcast: Depoimento de uma Vítima</h4>
+                        </div>
+                        <div class="audio-player">
+                            <div class="bg-red-600 p-3 rounded-full">
+                                <i data-lucide="volume-2" class="text-white w-6 h-6"></i>
+                            </div>
+                            <audio controls class="w-full h-8">
+                                <source src="audio/videoplayback.mp4" type="audio/mpeg">
+                            </audio>
+                        </div>
+                        <div class="p-6 bg-zinc-900/80 rounded-xl border border-white/5">
+                            <p class="text-xs text-gray-400 leading-relaxed">Neste áudio, ouvimos o relato real de como um contacto via WhatsApp parecia legítimo até ao momento da solicitação do "Seguro Fiança Antecipado".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- PÁGINA DE CADASTRO (Página 2 - Oculta por padrão) -->
+    <main id="register-view" class="hidden-page pt-32 pb-24 px-6 min-h-screen">
+        <div class="max-w-3xl mx-auto">
+            <button onclick="showMainPage()" class="text-gray-400 hover:text-white flex items-center gap-2 mb-8 transition">
+                <i data-lucide="arrow-left"></i> Voltar para o início
+            </button>
+            <div class="bg-zinc-900 rounded-3xl p-10 shadow-2xl border border-white/5">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold mb-2">Mantenha-se Atualizado</h2>
+                    <p class="text-gray-400">Receba alertas de novos golpes e avalie o nosso conteúdo.</p>
+                </div>
+
+                <form class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase">Nome Completo</label>
+                            <input type="text" placeholder="Ex: João Silva" class="w-full bg-black border border-zinc-800 p-4 rounded focus:border-red-600 outline-none transition text-white">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase">E-mail</label>
+                            <input type="email" placeholder="email@exemplo.com" class="w-full bg-black border border-zinc-800 p-4 rounded focus:border-red-600 outline-none transition text-white">
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase">Telefone</label>
+                            <input type="tel" placeholder="(00) 00000-0000" class="w-full bg-black border border-zinc-800 p-4 rounded focus:border-red-600 outline-none transition text-white">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase">CPF</label>
+                            <input type="text" placeholder="000.000.000-00" class="w-full bg-black border border-zinc-800 p-4 rounded focus:border-red-600 outline-none transition text-white">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase">Data de Nascimento</label>
+                            <input type="date" class="w-full bg-black border border-zinc-800 p-4 rounded focus:border-red-600 outline-none transition text-white">
+                        </div>
+                    </div>
+
+                    <div class="pt-8 border-t border-white/10">
+                        <p class="text-center text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest">Avalie a utilidade desta informação</p>
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5"><label for="star5"></label>
+                            <input type="radio" id="star4" name="rating" value="4"><label for="star4"></label>
+                            <input type="radio" id="star3" name="rating" value="3"><label for="star3"></label>
+                            <input type="radio" id="star2" name="rating" value="2"><label for="star2"></label>
+                            <input type="radio" id="star1" name="rating" value="1"><label for="star1"></label>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="alert('Cadastro realizado com sucesso!')" class="w-full btn-netflix py-5 rounded font-bold text-lg uppercase tracking-widest mt-4">Concluir Cadastro</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="py-16 border-t border-white/10 text-center bg-black">
+        <div class="flex flex-col items-center gap-4 mb-6">
+            <img src="imagem/cadeado.png" alt="Logo Crédito Seguro" class="w-[160px] h-[160px] object-contain">
+            
+            <div class="text-3xl font-bold text-red-600 tracking-tighter uppercase">Crédito Seguro</div>
+            
+            <p class="text-gray-500 text-sm max-w-lg mx-auto leading-relaxed mt-2">
+                Informação é a sua melhor arma contra a fraude. <br> 
+                Iniciativa independente de educação financeira em 2026.
+            </p>
+        </div>
+        <p class="mt-8 text-[10px] text-gray-700 uppercase tracking-widest">© 2026 Crédito Seguro - Proteja o seu futuro financeiro.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // Lógica de Troca de Páginas
+        function showRegisterPage() {
+            document.getElementById('main-view').classList.add('hidden-page');
+            document.getElementById('register-view').classList.remove('hidden-page');
+            window.scrollTo(0, 0);
+        }
+
+        function showMainPage() {
+            document.getElementById('register-view').classList.add('hidden-page');
+            document.getElementById('main-view').classList.remove('hidden-page');
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, { threshold: 0.05 });
+
+        document.querySelectorAll('section').forEach(section => {
+            if(section.id !== 'home') {
+                section.style.opacity = '0';
+                observer.observe(section);
+            }
+        });
+    </script>
+</body>
+</html>
