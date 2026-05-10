@@ -30,13 +30,15 @@ function initMap(lat, lon) {
 
         zonaMarker.on('dragend', e => {
             const p = e.target.getLatLng();
-            selectedLat = p.lat; selectedLon = p.lng;
+            selectedLat = p.lat;
+            selectedLon = p.lng;
             zonaCircle.setLatLng(p);
             updateMapHint(p.lat, p.lng);
         });
 
         zonaMap.on('click', e => {
-            selectedLat = e.latlng.lat; selectedLon = e.latlng.lng;
+            selectedLat = e.latlng.lat;
+            selectedLon = e.latlng.lng;
             zonaMarker.setLatLng(e.latlng);
             zonaCircle.setLatLng(e.latlng);
             updateMapHint(selectedLat, selectedLon);
@@ -56,6 +58,21 @@ function updateRaioLabel(val) {
 
 function updateMapCircle() {
     if (zonaCircle) zonaCircle.setRadius(parseInt(document.getElementById('modal-zona-raio').value));
+}
+
+// Centraliza o mapa e o marcador na localização atual do dispositivo
+function usarLocalizacaoAtual() {
+    const lat = getLat();
+    const lon = getLon();
+
+    if (zonaMap && zonaMarker && zonaCircle) {
+        zonaMap.setView([lat, lon], 15);
+        zonaMarker.setLatLng([lat, lon]);
+        zonaCircle.setLatLng([lat, lon]);
+        selectedLat = lat;
+        selectedLon = lon;
+        updateMapHint(lat, lon);
+    }
 }
 
 /* --- Modal --- */

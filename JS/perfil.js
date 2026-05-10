@@ -16,10 +16,10 @@ async function carregarProtecao() {
             modoRuaAppAtivo = d.modoRuaAtivo;
             atualizarToggleModoRua();
         } else {
-            document.getElementById('modo-rua-status-text').textContent = 'Erro ao carregar';
+            setModoRuaText('Erro ao carregar', '#ef4444');
         }
     } catch (e) {
-        document.getElementById('modo-rua-status-text').textContent = 'Sem conexão';
+        setModoRuaText('Sem conexão', '#ef4444');
     }
 
     // Zonas
@@ -41,15 +41,42 @@ async function carregarProtecao() {
     }
 }
 
+/* Define texto e cor do status do Modo Rua de forma explícita */
+function setModoRuaText(texto, cor) {
+    const el = document.getElementById('modo-rua-status-text');
+    if (!el) return;
+    el.textContent = texto;
+    el.style.color = cor;
+    el.style.fontSize = '12px';
+    el.style.display = 'block';
+}
+
 function atualizarToggleModoRua() {
     document.getElementById('toggle-modo-rua-app').classList.toggle('on', modoRuaAppAtivo);
-    document.getElementById('modo-rua-status-text').textContent = modoRuaAppAtivo
-        ? 'Ativo — Acesso restrito à zona segura'
-        : 'Inativo — Acesso liberado em qualquer local';
+    if (modoRuaAppAtivo) {
+        setModoRuaText('Ativo — Acesso restrito à zona segura', '#16a34a');
+    } else {
+        setModoRuaText('Inativo — Acesso liberado em qualquer local', '#6b7280');
+    }
 }
 
 async function toggleModoRuaApp() {
     if (!currentToken || !currentUserId) return;
+
+    // Se vai ATIVAR, verifica se há zonas cadastradas
+    if (!modoRuaAppAtivo) {
+        try {
+            const res = await apiGetZonas(currentUserId, currentToken);
+            if (res.ok) {
+                const zonas = await res.json();
+                if (!zonas || zonas.length === 0) {
+                    showModalObrigatorio();
+                    return;
+                }
+            }
+        } catch (e) {}
+    }
+
     try {
         const res = await apiToggleModoRua(currentUserId, currentToken);
         if (res.ok) {
@@ -58,6 +85,12 @@ async function toggleModoRuaApp() {
             atualizarToggleModoRua();
         }
     } catch (e) {}
+}
+
+function showModalObrigatorio() {
+    setModoRuaText('⚠ Adicione ao menos uma zona para ativar o Modo Rua', '#CC092F');
+    setTimeout(() => atualizarToggleModoRua(), 3000);
+    openAddZona();
 }
 
 function renderAlertas(alertas) {

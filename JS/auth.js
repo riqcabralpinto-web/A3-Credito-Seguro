@@ -7,9 +7,77 @@ let currentUserId = null;
 let currentToken = null;
 let modoRuaAtivo = true;
 
+// Controla se o usuário selecionou uma localização no mapa de cadastro
+let registroLat = null;
+let registroLon = null;
+let registroMap = null;
+let registroMarker = null;
+let registroCircle = null;
+
 function toggleModoRua() {
     modoRuaAtivo = !modoRuaAtivo;
     document.getElementById('toggle-modoRua').classList.toggle('on', modoRuaAtivo);
+    const mapaRegistro = document.getElementById('registro-mapa-container');
+    if (mapaRegistro) {
+        mapaRegistro.style.display = modoRuaAtivo ? 'block' : 'none';
+    }
+}
+
+/* --- Inicializa mapa no cadastro --- */
+function initRegistroMap() {
+    if (registroMap) return;
+    const lat = getLat();
+    const lon = getLon();
+    registroLat = lat;
+    registroLon = lon;
+
+    setTimeout(() => {
+        registroMap = L.map('registro-map').setView([lat, lon], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(registroMap);
+
+        registroMarker = L.marker([lat, lon], { draggable: true }).addTo(registroMap);
+        registroCircle = L.circle([lat, lon], {
+            radius: 500, color: '#CC092F', fillColor: '#CC092F', fillOpacity: 0.15
+        }).addTo(registroMap);
+
+        updateRegistroMapHint(lat, lon);
+
+        registroMarker.on('dragend', e => {
+            const p = e.target.getLatLng();
+            registroLat = p.lat;
+            registroLon = p.lng;
+            registroCircle.setLatLng(p);
+            updateRegistroMapHint(p.lat, p.lng);
+        });
+
+        registroMap.on('click', e => {
+            registroLat = e.latlng.lat;
+            registroLon = e.latlng.lng;
+            registroMarker.setLatLng(e.latlng);
+            registroCircle.setLatLng(e.latlng);
+            updateRegistroMapHint(registroLat, registroLon);
+        });
+    }, 150);
+}
+
+function updateRegistroMapHint(lat, lon) {
+    const el = document.getElementById('registro-map-hint');
+    if (el) el.textContent = `📍 ${lat.toFixed(5)}, ${lon.toFixed(5)} — Arraste o marcador para ajustar`;
+}
+
+function usarLocalizacaoAtualRegistro() {
+    const lat = getLat();
+    const lon = getLon();
+    if (registroMap && registroMarker && registroCircle) {
+        registroMap.setView([lat, lon], 15);
+        registroMarker.setLatLng([lat, lon]);
+        registroCircle.setLatLng([lat, lon]);
+        registroLat = lat;
+        registroLon = lon;
+        updateRegistroMapHint(lat, lon);
+    }
 }
 
 /* --- Cadastro --- */
@@ -20,6 +88,7 @@ async function doRegister() {
     const emailSec = document.getElementById('reg-email2').value.trim();
 
     clearStatus('register-status');
+
     if (!nome || !email || !senha) {
         showStatus('register-status', 400, '❌ Preencha todos os campos obrigatórios.');
         return;
@@ -28,11 +97,13 @@ async function doRegister() {
         showStatus('register-status', 400, '❌ A senha deve ter pelo menos 6 caracteres.');
         return;
     }
+    if (modoRuaAtivo && (!registroLat || !registroLon)) {
+        showStatus('register-status', 400, '❌ Selecione uma localização no mapa para ativar o Modo Rua.');
+        return;
+    }
 
     const btn = document.getElementById('btn-register');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Obtendo localização...';
-    await getLocation();
     btn.innerHTML = '<span class="spinner"></span>Criando conta...';
 
     try {
@@ -50,16 +121,22 @@ async function doRegister() {
         currentEmail = email;
 
         if (modoRuaAtivo) {
-            const lr = await apiLogin(email, senha, getLat(), getLon());
+            const lr = await apiLogin(email, senha, registroLat, registroLon);
             const ld = await lr.json();
             currentToken = ld.token;
             currentUserId = ld.id;
             await apiToggleModoRua(currentUserId, currentToken);
             await apiCreateZona(currentUserId, currentToken, {
-                latitude: getLat(), longitude: getLon(),
-                raioMetros: 500, descricao: 'Zona inicial'
+                latitude: registroLat,
+                longitude: registroLon,
+                raioMetros: 500,
+                descricao: 'Zona inicial'
             });
         }
+
+        // Limpa mapa de registro para próximo uso
+        if (registroMap) { registroMap.remove(); registroMap = null; registroMarker = null; registroCircle = null; }
+        registroLat = null; registroLon = null;
 
         btn.disabled = false;
         btn.textContent = 'Criar conta e ativar proteção';
