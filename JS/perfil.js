@@ -8,7 +8,6 @@ let modoRuaAppAtivo = false;
 async function carregarProtecao() {
     if (!currentToken || !currentUserId) return;
 
-    // Modo Rua
     try {
         const res = await apiGetUsuario(currentUserId, currentToken);
         if (res.ok) {
@@ -22,7 +21,6 @@ async function carregarProtecao() {
         setModoRuaText('Sem conexão', '#ef4444');
     }
 
-    // Zonas
     try {
         const res = await apiGetZonas(currentUserId, currentToken);
         if (res.ok) { renderZonas(await res.json()); }
@@ -31,7 +29,6 @@ async function carregarProtecao() {
         document.getElementById('zonas-list').innerHTML = '<p class="empty-state">Sem conexão com o servidor.</p>';
     }
 
-    // Alertas
     try {
         const res = await apiGetAlertas(currentUserId, currentToken);
         if (res.ok) { renderAlertas(await res.json()); }
@@ -41,7 +38,6 @@ async function carregarProtecao() {
     }
 }
 
-/* Define texto e cor do status do Modo Rua de forma explícita */
 function setModoRuaText(texto, cor) {
     const el = document.getElementById('modo-rua-status-text');
     if (!el) return;
@@ -52,10 +48,13 @@ function setModoRuaText(texto, cor) {
 }
 
 function atualizarToggleModoRua() {
-    document.getElementById('toggle-modo-rua-app').classList.toggle('on', modoRuaAppAtivo);
+    const toggle = document.getElementById('toggle-modo-rua-app');
+    if (!toggle) return;
     if (modoRuaAppAtivo) {
+        toggle.classList.add('on');
         setModoRuaText('Ativo — Acesso restrito à zona segura', '#16a34a');
     } else {
+        toggle.classList.remove('on');
         setModoRuaText('Inativo — Acesso liberado em qualquer local', '#6b7280');
     }
 }
@@ -63,18 +62,23 @@ function atualizarToggleModoRua() {
 async function toggleModoRuaApp() {
     if (!currentToken || !currentUserId) return;
 
-    // Se vai ATIVAR, verifica se há zonas cadastradas
+    // Validação só ao ATIVAR (estava correto), mas com feedback de erro
     if (!modoRuaAppAtivo) {
         try {
             const res = await apiGetZonas(currentUserId, currentToken);
-            if (res.ok) {
-                const zonas = await res.json();
-                if (!zonas || zonas.length === 0) {
-                    showModalObrigatorio();
-                    return;
-                }
+            if (!res.ok) {
+                setModoRuaText('Erro ao verificar zonas.', '#ef4444');
+                return; // ← sai se não conseguir verificar
             }
-        } catch (e) {}
+            const zonas = await res.json();
+            if (!zonas || zonas.length === 0) {
+                showModalObrigatorio();
+                return;
+            }
+        } catch (e) {
+            setModoRuaText('Sem conexão ao verificar zonas.', '#ef4444');
+            return; // ← não deixa continuar sem saber o estado
+        }
     }
 
     try {
@@ -83,8 +87,12 @@ async function toggleModoRuaApp() {
             const d = await res.json();
             modoRuaAppAtivo = d.modoRuaAtivo;
             atualizarToggleModoRua();
+        } else {
+            setModoRuaText('Erro ao alterar o Modo Rua.', '#ef4444');
         }
-    } catch (e) {}
+    } catch (e) {
+        setModoRuaText('Sem conexão com o servidor.', '#ef4444');
+    }
 }
 
 function showModalObrigatorio() {

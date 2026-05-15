@@ -87,7 +87,7 @@
 </main>
 
 <!-- SIMULAÇÃO -->
-<main id="simulation-view" class="hidden-page" style="min-height:100vh;padding-top:80px;">
+<main id="simulation-view" class="hidden-page" style="min-height:100vh;padding-top:80px;background:#111;">
     <div style="background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;">
         <button onclick="showMainPage()" style="background:none;border:none;color:#aaa;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:13px;"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Voltar ao site</button>
         <span style="font-size:12px;color:#555;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Simulação Educativa — Modo Rua</span>
@@ -95,13 +95,13 @@
     </div>
 
     <!-- INTRO -->
-    <div id="sim-intro" class="sim-screen active" style="align-items:center;justify-content:center;padding:48px 16px;">
+    <div id="sim-intro" class="sim-screen active" style="align-items:center;justify-content:center;padding:48px 16px;background:#111;">
         <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;padding:48px;max-width:560px;width:100%;text-align:center;">
             <div style="width:72px;height:72px;background:rgba(204,9,47,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;"><svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="#CC092F" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
             <h1 style="font-size:26px;font-weight:700;margin-bottom:12px;">Simulação: Modo Rua</h1>
             <p style="color:#aaa;line-height:1.7;margin-bottom:32px;font-size:15px;">Veja como funciona a proteção por localização com o <strong style="color:white;">Modo Rua ativado</strong>.</p>
             <div style="background:#111;border-radius:12px;padding:20px;margin-bottom:32px;text-align:left;">
-                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><div style="width:28px;height:28px;background:rgba(204,9,47,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#CC092F;font-size:13px;font-weight:700;">1</span></div><div><p style="font-weight:600;margin:0 0 2px;font-size:14px;">Cadastro com zona segura</p><p style="color:#888;font-size:13px;margin:0;">Crie uma conta e defina sua zona segura no mapa</p></div></div>
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><div style="width:28px;height:28px;background:rgba(204,9,47,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#CC092F;font-size:13px;font-weight:700;">1</span></div><div><p style="font-weight:600;margin:0 0 2px;font-size:14px;">Cadastro com zona segura</p><p style="color:#888;font-size:13px;margin:0;">Crie uma conta e defina sua zona segura no mapa ou pelo CEP</p></div></div>
                 <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><div style="width:28px;height:28px;background:rgba(204,9,47,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#CC092F;font-size:13px;font-weight:700;">2</span></div><div><p style="font-weight:600;margin:0 0 2px;font-size:14px;">Login com Modo Rua ativo</p><p style="color:#888;font-size:13px;margin:0;">O sistema verifica sua localização em tempo real</p></div></div>
                 <div style="display:flex;align-items:flex-start;gap:12px;"><div style="width:28px;height:28px;background:rgba(204,9,47,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#CC092F;font-size:13px;font-weight:700;">3</span></div><div><p style="font-weight:600;margin:0 0 2px;font-size:14px;">Acesso negado ou liberado</p><p style="color:#888;font-size:13px;margin:0;">Dentro da zona: acesso liberado. Fora: bloqueado com opção de emergência</p></div></div>
             </div>
@@ -111,7 +111,7 @@
     </div>
 
     <!-- CADASTRO -->
-    <div id="sim-register" class="sim-screen" style="flex-direction:column;">
+    <div id="sim-register" class="sim-screen" style="flex-direction:column;background:#111;">
         <div class="bradesco-header"><div class="bradesco-logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="#CC092F" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>Bradesco</div><span style="font-size:12px;opacity:0.8;">SIMULAÇÃO EDUCATIVA</span></div>
         <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:#f0f0f0;">
             <div class="login-card" style="max-width:480px;">
@@ -133,8 +133,29 @@
                         <div class="toggle-track on" id="toggle-modoRua" onclick="toggleModoRua()"><div class="toggle-thumb"></div></div>
                     </div>
 
-                    <!-- Mapa de localização (obrigatório quando Modo Rua ativo) -->
+                    <!-- Mapa + CEP no cadastro -->
                     <div id="registro-mapa-container" style="display:block;">
+                        <!-- Busca por CEP no cadastro -->
+                        <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">BUSCAR POR CEP</label>
+                        <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+                            <input
+                                type="text"
+                                id="registro-cep"
+                                class="login-input"
+                                placeholder="00000-000"
+                                maxlength="9"
+                                oninput="formatarCEPRegistro(this)"
+                                style="flex:1;">
+                            <button
+                                id="btn-buscar-cep-registro"
+                                onclick="buscarCEPRegistro()"
+                                style="background:#1d4ed8;color:white;border:none;border-radius:8px;padding:14px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                                🔍 Buscar
+                            </button>
+                        </div>
+                        <p id="cep-registro-status" style="font-size:12px;margin-bottom:8px;min-height:16px;"></p>
+
+                        <!-- Mapa de localização -->
                         <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">ZONA SEGURA INICIAL — clique ou arraste o marcador</label>
                         <div id="registro-map" style="width:100%;height:200px;border-radius:10px;border:1.5px solid #ddd;z-index:1;"></div>
                         <p style="font-size:12px;color:#888;margin-top:6px;text-align:center;" id="registro-map-hint">📍 Carregando sua localização...</p>
@@ -151,7 +172,7 @@
     </div>
 
     <!-- LOGIN -->
-    <div id="sim-login" class="sim-screen" style="flex-direction:column;">
+    <div id="sim-login" class="sim-screen" style="flex-direction:column;background:#111;">
         <div class="bradesco-header"><div class="bradesco-logo"><div class="logo-icon"><svg viewBox="0 0 24 24" fill="#CC092F" width="20" height="20"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>Bradesco</div><div style="display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;background:#4ade80;border-radius:50%;"></div><span style="font-size:12px;opacity:0.8;">MODO RUA ATIVO</span></div></div>
         <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:#f0f0f0;">
             <div class="login-card">
@@ -193,9 +214,8 @@
             <h2 style="font-size:22px;font-weight:700;margin:0 0 8px;">Acesso de emergência</h2>
             <p style="color:#888;font-size:14px;line-height:1.6;margin-bottom:16px;" id="otp-email-info">Um código de 6 dígitos foi enviado para seu e-mail secundário.</p>
             <div class="demo-otp-box" style="margin-bottom:20px;">
-                <p style="font-size:12px;color:#1e40af;font-weight:600;margin:0 0 6px;">🧪 Modo demonstração — código padrão:</p>
-                <p style="font-size:28px;font-weight:700;color:#1d4ed8;letter-spacing:8px;margin:0;" id="demo-otp-display">------</p>
-                <p style="font-size:11px;color:#6b7280;margin:4px 0 0;">Verifique o código no banco de dados (tabela otps) ou no seu e-mail</p>
+                <p style="font-size:12px;color:#1e40af;font-weight:600;margin:0 0 6px;">🧪 Modo demonstração</p>
+                <p style="font-size:11px;color:#6b7280;margin:0;">Verifique o código na tabela <strong>otps</strong> do banco de dados (pgAdmin)</p>
             </div>
             <div id="emergency-status" class="status-msg"></div>
             <div style="margin-bottom:20px;"><label style="font-size:12px;color:#888;font-weight:600;display:block;margin-bottom:10px;text-transform:uppercase;">Digite o código OTP</label><input type="text" id="otp-code" class="otp-input" placeholder="000000" maxlength="6"></div>
@@ -206,7 +226,7 @@
     </div>
 
     <!-- SUCESSO -->
-    <div id="sim-success" class="sim-screen" style="align-items:center;justify-content:center;padding:48px 16px;background:linear-gradient(135deg,#0a1628 0%,#0f2044 100%);">
+    <div id="sim-success" class="sim-screen" style="align-items:center;justify-content:center;padding:48px 16px;background:#0d0d0d;">
         <div style="max-width:440px;width:100%;text-align:center;">
             <div style="margin-bottom:20px;">
                 <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(74,222,128,0.1);color:#4ade80;padding:8px 20px;border-radius:100px;font-size:13px;font-weight:700;margin-bottom:8px;" id="success-badge">✓ Acesso Liberado — 200 OK</div>
@@ -232,13 +252,19 @@
                 </div>
                 <!-- Proteção -->
                 <div id="panel-protecao" style="background:white;display:none;padding:20px 24px;">
-                    <!-- Toggle Modo Rua — sem min-height para não gerar espaço em branco -->
+                    <!-- Toggle Modo Rua — botão separado para evitar conflito de eventos -->
                     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff8f8;border:1px solid #ffd7d7;border-radius:10px;margin-bottom:20px;">
                         <div style="flex:1;min-width:0;">
                             <p style="font-weight:700;font-size:14px;margin:0 0 3px;color:#111;">Modo Rua</p>
-                            <p style="font-size:12px;color:#888;margin:0;white-space:normal;word-break:break-word;" id="modo-rua-status-text">—</p>
+                            <p style="font-size:12px;margin:0;white-space:normal;word-break:break-word;" id="modo-rua-status-text">—</p>
                         </div>
-                        <div class="toggle-track" id="toggle-modo-rua-app" onclick="toggleModoRuaApp()" style="flex-shrink:0;margin-left:12px;"><div class="toggle-thumb"></div></div>
+                        <!-- Botão separado em vez de onclick no div para evitar problemas de clique -->
+                        <button
+                            id="btn-toggle-modo-rua"
+                            onclick="toggleModoRuaApp()"
+                            style="background:none;border:none;padding:0;cursor:pointer;flex-shrink:0;margin-left:12px;">
+                            <div class="toggle-track" id="toggle-modo-rua-app"><div class="toggle-thumb"></div></div>
+                        </button>
                     </div>
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><p style="font-weight:700;font-size:14px;color:#111;margin:0;">Zonas Seguras</p><button onclick="openAddZona()" style="background:#CC092F;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">+ Adicionar</button></div>
                     <div id="zonas-list"><p class="empty-state">Carregando...</p></div>
@@ -262,7 +288,7 @@
     </div>
 </main>
 
-<!-- Modal Zona com Mapa -->
+<!-- Modal Zona com Mapa e CEP -->
 <div class="modal-overlay" id="modal-zona">
     <div class="modal-card">
         <h3 style="font-size:18px;font-weight:700;margin:0 0 16px;" id="modal-zona-title">Adicionar Zona Segura</h3>
@@ -270,12 +296,18 @@
         <div style="display:flex;flex-direction:column;gap:12px;">
             <div><label style="font-size:12px;color:#555;font-weight:600;">DESCRIÇÃO</label><input type="text" id="modal-zona-desc" class="modal-input" placeholder="Ex: Minha casa, Trabalho..."></div>
             <div>
+                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">BUSCAR POR CEP</label>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="text" id="modal-zona-cep" class="modal-input" placeholder="00000-000" maxlength="9" oninput="formatarCEP(this)" style="flex:1;margin-top:0;">
+                    <button id="btn-buscar-cep" onclick="buscarCEP()" style="background:#1d4ed8;color:white;border:none;border-radius:8px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">🔍 Buscar</button>
+                </div>
+                <p id="cep-status" style="font-size:12px;margin-top:6px;min-height:16px;"></p>
+            </div>
+            <div>
                 <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">LOCALIZAÇÃO — clique ou arraste o marcador no mapa</label>
                 <div id="zona-map"></div>
                 <p class="map-hint" id="map-coords-hint">📍 Clique no mapa para selecionar o ponto central da zona</p>
-                <button onclick="usarLocalizacaoAtual()" style="background:#f0f9ff;border:1px solid #93c5fd;border-radius:8px;padding:9px;width:100%;font-size:13px;font-weight:600;color:#1d4ed8;cursor:pointer;margin-top:6px;">
-                    📍 Usar minha localização atual
-                </button>
+                <button onclick="usarLocalizacaoAtual()" style="background:#f0f9ff;border:1px solid #93c5fd;border-radius:8px;padding:9px;width:100%;font-size:13px;font-weight:600;color:#1d4ed8;cursor:pointer;margin-top:6px;">📍 Usar minha localização atual</button>
             </div>
             <div><label style="font-size:12px;color:#555;font-weight:600;">RAIO DE PROTEÇÃO</label><input type="range" id="modal-zona-raio" min="100" max="5000" value="500" oninput="updateRaioLabel(this.value);updateMapCircle();" style="width:100%;margin-top:6px;accent-color:#CC092F;"><div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-top:2px;"><span>100m</span><span id="raio-label" style="font-weight:700;color:#CC092F;">500m</span><span>5km</span></div></div>
             <div id="modal-status" class="status-msg"></div>
@@ -296,7 +328,6 @@
     <p class="mt-8 text-[10px] text-gray-700 uppercase tracking-widest">© 2026 Crédito Seguro - Proteja o seu futuro financeiro.</p>
 </footer>
 
-<!-- Scripts na ordem correta de dependência -->
 <script src="JS/api.js"></script>
 <script src="JS/ui.js"></script>
 <script src="JS/location.js"></script>

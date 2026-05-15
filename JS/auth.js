@@ -7,7 +7,6 @@ let currentUserId = null;
 let currentToken = null;
 let modoRuaAtivo = true;
 
-// Controla se o usuário selecionou uma localização no mapa de cadastro
 let registroLat = null;
 let registroLon = null;
 let registroMap = null;
@@ -23,7 +22,7 @@ function toggleModoRua() {
     }
 }
 
-/* --- Inicializa mapa no cadastro --- */
+/* --- Mapa do cadastro --- */
 function initRegistroMap() {
     if (registroMap) return;
     const lat = getLat();
@@ -80,6 +79,77 @@ function usarLocalizacaoAtualRegistro() {
     }
 }
 
+/* --- CEP no cadastro --- */
+function formatarCEPRegistro(input) {
+    let val = input.value.replace(/\D/g, '');
+    if (val.length > 5) val = val.slice(0, 5) + '-' + val.slice(5, 8);
+    input.value = val;
+    if (val.replace(/\D/g, '').length === 8) buscarCEPRegistro();
+}
+
+async function buscarCEPRegistro() {
+    const cep = document.getElementById('registro-cep').value.replace(/\D/g, '');
+    const btn = document.getElementById('btn-buscar-cep-registro');
+    const status = document.getElementById('cep-registro-status');
+
+    if (cep.length !== 8) {
+        status.textContent = '❌ CEP deve ter 8 dígitos.';
+        status.style.color = '#ef4444';
+        return;
+    }
+
+    status.textContent = '🔍 Buscando endereço...';
+    status.style.color = '#6b7280';
+    btn.disabled = true;
+
+    try {
+        const viaCepRes = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const viaCepData = await viaCepRes.json();
+
+        if (viaCepData.erro) {
+            status.textContent = '❌ CEP não encontrado.';
+            status.style.color = '#ef4444';
+            btn.disabled = false;
+            return;
+        }
+
+        const endereco = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade}, ${viaCepData.uf}, Brasil`;
+        status.textContent = `📍 ${viaCepData.logradouro}, ${viaCepData.bairro} — ${viaCepData.localidade}/${viaCepData.uf}`;
+        status.style.color = '#16a34a';
+
+        const nominatimRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(endereco)}&format=json&limit=1`,
+            { headers: { 'Accept-Language': 'pt-BR' } }
+        );
+        const nominatimData = await nominatimRes.json();
+
+        if (!nominatimData.length) {
+            status.textContent = '⚠ Não foi possível localizar no mapa. Ajuste manualmente.';
+            status.style.color = '#f59e0b';
+            btn.disabled = false;
+            return;
+        }
+
+        const lat = parseFloat(nominatimData[0].lat);
+        const lon = parseFloat(nominatimData[0].lon);
+
+        if (registroMap && registroMarker && registroCircle) {
+            registroMap.setView([lat, lon], 16);
+            registroMarker.setLatLng([lat, lon]);
+            registroCircle.setLatLng([lat, lon]);
+            registroLat = lat;
+            registroLon = lon;
+            updateRegistroMapHint(lat, lon);
+        }
+
+    } catch (e) {
+        status.textContent = '❌ Erro ao buscar CEP. Verifique sua conexão.';
+        status.style.color = '#ef4444';
+    }
+
+    btn.disabled = false;
+}
+
 /* --- Cadastro --- */
 async function doRegister() {
     const nome = document.getElementById('reg-nome').value.trim();
@@ -134,7 +204,6 @@ async function doRegister() {
             });
         }
 
-        // Limpa mapa de registro para próximo uso
         if (registroMap) { registroMap.remove(); registroMap = null; registroMarker = null; registroCircle = null; }
         registroLat = null; registroLon = null;
 

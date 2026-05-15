@@ -60,11 +60,10 @@ function updateMapCircle() {
     if (zonaCircle) zonaCircle.setRadius(parseInt(document.getElementById('modal-zona-raio').value));
 }
 
-// Centraliza o mapa e o marcador na localização atual do dispositivo
+// Centraliza o mapa na localização atual do dispositivo
 function usarLocalizacaoAtual() {
     const lat = getLat();
     const lon = getLon();
-
     if (zonaMap && zonaMarker && zonaCircle) {
         zonaMap.setView([lat, lon], 15);
         zonaMarker.setLatLng([lat, lon]);
@@ -75,11 +74,95 @@ function usarLocalizacaoAtual() {
     }
 }
 
+// Busca endereço pelo CEP e centraliza o mapa
+async function buscarCEP() {
+    const cep = document.getElementById('modal-zona-cep').value.replace(/\D/g, '');
+    const btnCep = document.getElementById('btn-buscar-cep');
+    const cepStatus = document.getElementById('cep-status');
+
+    if (cep.length !== 8) {
+        cepStatus.textContent = '❌ CEP deve ter 8 dígitos.';
+        cepStatus.style.color = '#ef4444';
+        return;
+    }
+
+    cepStatus.textContent = '🔍 Buscando endereço...';
+    cepStatus.style.color = '#6b7280';
+    btnCep.disabled = true;
+
+    try {
+        // 1. ViaCEP: busca endereço pelo CEP
+        const viaCepRes = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const viaCepData = await viaCepRes.json();
+
+        if (viaCepData.erro) {
+            cepStatus.textContent = '❌ CEP não encontrado.';
+            cepStatus.style.color = '#ef4444';
+            btnCep.disabled = false;
+            return;
+        }
+
+        const endereco = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade}, ${viaCepData.uf}, Brasil`;
+        cepStatus.textContent = `📍 ${viaCepData.logradouro}, ${viaCepData.bairro} — ${viaCepData.localidade}/${viaCepData.uf}`;
+        cepStatus.style.color = '#16a34a';
+
+        // 2. Nominatim: converte endereço em lat/lon
+        const nominatimRes = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(endereco)}&format=json&limit=1`,
+            { headers: { 'Accept-Language': 'pt-BR' } }
+        );
+        const nominatimData = await nominatimRes.json();
+
+        if (!nominatimData.length) {
+            cepStatus.textContent = '⚠ Endereço encontrado mas não foi possível localizar no mapa. Ajuste manualmente.';
+            cepStatus.style.color = '#f59e0b';
+            btnCep.disabled = false;
+            return;
+        }
+
+        const lat = parseFloat(nominatimData[0].lat);
+        const lon = parseFloat(nominatimData[0].lon);
+
+        // 3. Centraliza o mapa nas coordenadas encontradas
+        if (zonaMap && zonaMarker && zonaCircle) {
+            zonaMap.setView([lat, lon], 16);
+            zonaMarker.setLatLng([lat, lon]);
+            zonaCircle.setLatLng([lat, lon]);
+            selectedLat = lat;
+            selectedLon = lon;
+            updateMapHint(lat, lon);
+        }
+
+        // Preenche descrição automaticamente se estiver vazia
+        const descInput = document.getElementById('modal-zona-desc');
+        if (!descInput.value.trim()) {
+            descInput.value = `${viaCepData.bairro}, ${viaCepData.localidade}`;
+        }
+
+    } catch (e) {
+        cepStatus.textContent = '❌ Erro ao buscar CEP. Verifique sua conexão.';
+        cepStatus.style.color = '#ef4444';
+    }
+
+    btnCep.disabled = false;
+}
+
+// Formata CEP enquanto o usuário digita (00000-000)
+function formatarCEP(input) {
+    let val = input.value.replace(/\D/g, '');
+    if (val.length > 5) val = val.slice(0, 5) + '-' + val.slice(5, 8);
+    input.value = val;
+    // Busca automaticamente quando o CEP está completo
+    if (val.replace(/\D/g, '').length === 8) buscarCEP();
+}
+
 /* --- Modal --- */
 function openAddZona() {
     document.getElementById('modal-zona-title').textContent = 'Adicionar Zona Segura';
     document.getElementById('modal-zona-id').value = '';
     document.getElementById('modal-zona-desc').value = '';
+    document.getElementById('modal-zona-cep').value = '';
+    document.getElementById('cep-status').textContent = '';
     document.getElementById('modal-zona-raio').value = 500;
     clearStatus('modal-status');
     updateRaioLabel(500);
@@ -91,6 +174,8 @@ function openEditZona(id, desc, lat, lon, raio) {
     document.getElementById('modal-zona-title').textContent = 'Editar Zona Segura';
     document.getElementById('modal-zona-id').value = id;
     document.getElementById('modal-zona-desc').value = desc;
+    document.getElementById('modal-zona-cep').value = '';
+    document.getElementById('cep-status').textContent = '';
     document.getElementById('modal-zona-raio').value = raio;
     clearStatus('modal-status');
     updateRaioLabel(raio);
@@ -110,7 +195,7 @@ async function salvarZona() {
 
     clearStatus('modal-status');
     if (!desc) { showStatus('modal-status', 400, '❌ Informe uma descrição para a zona.'); return; }
-    if (!selectedLat || !selectedLon) { showStatus('modal-status', 400, '❌ Clique no mapa para selecionar a localização.'); return; }
+    if (!selectedLat || !selectedLon) { showStatus('modal-status', 400, '❌ Selecione uma localização no mapa ou busque pelo CEP.'); return; }
     if (!currentUserId) { showStatus('modal-status', 401, '❌ Sessão inválida. Faça login novamente.'); return; }
 
     const dados = { descricao: desc, latitude: selectedLat, longitude: selectedLon, raioMetros: raio };
