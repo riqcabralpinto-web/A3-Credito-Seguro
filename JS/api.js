@@ -2,7 +2,7 @@
    api.js — Todas as chamadas HTTP ao backend
    ===================================================== */
 
-const API = 'http://localhost:8080';
+const API = 'https://api-creditoseguro.onrender.com';
 
 function authHeader(token) {
     return { 'Authorization': `Bearer ${token}` };
