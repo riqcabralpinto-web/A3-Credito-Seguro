@@ -101,7 +101,7 @@
             <h1 style="font-size:26px;font-weight:700;margin-bottom:12px;">Simulação: Modo Rua</h1>
             <p style="color:#aaa;line-height:1.7;margin-bottom:32px;font-size:15px;">Veja como funciona a proteção por localização com o <strong style="color:white;">Modo Rua ativado</strong>.</p>
             <div style="background:#111;border-radius:12px;padding:20px;margin-bottom:32px;text-align:left;">
-                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><div style="width:28px;height:28px;background:rgba(204,9,47,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#CC092F;font-size:13px;font-weight:700;">1</span></div><div><p style="font-weight:600;margin:0 0 2px;font-size:14px;">Cadastro com zona segura</p><p style="color:#888;font-size:13px;margin:0;">Crie uma conta e defina sua zona segura no mapa ou pelo CEP</p></div></div>
+                <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><div style="width:28px;height:28px;background:rgba(204,9,47,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#CC092F;font-size:13px;font-weight:700;">1</span></div><div><p style="font-weight:600;margin:0 0 2px;font-size:14px;">Cadastro com zona segura</p><p style="color:#888;font-size:13px;margin:0;">Crie uma conta e defina sua zona segura no mapa ou pesquisando o endereço</p></div></div>
                 <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><div style="width:28px;height:28px;background:rgba(204,9,47,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#CC092F;font-size:13px;font-weight:700;">2</span></div><div><p style="font-weight:600;margin:0 0 2px;font-size:14px;">Login com Modo Rua ativo</p><p style="color:#888;font-size:13px;margin:0;">O sistema verifica sua localização em tempo real</p></div></div>
                 <div style="display:flex;align-items:flex-start;gap:12px;"><div style="width:28px;height:28px;background:rgba(204,9,47,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="color:#CC092F;font-size:13px;font-weight:700;">3</span></div><div><p style="font-weight:600;margin:0 0 2px;font-size:14px;">Acesso negado ou liberado</p><p style="color:#888;font-size:13px;margin:0;">Dentro da zona: acesso liberado. Fora: bloqueado com opção de emergência</p></div></div>
             </div>
@@ -133,27 +133,25 @@
                         <div class="toggle-track on" id="toggle-modoRua" onclick="toggleModoRua()"><div class="toggle-thumb"></div></div>
                     </div>
 
-                    <!-- Mapa + CEP no cadastro -->
+                    <!-- Mapa + Endereço no cadastro -->
                     <div id="registro-mapa-container" style="display:block;">
-                        <!-- Busca por CEP no cadastro -->
-                        <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">BUSCAR POR CEP</label>
-                        <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+                        <!-- Busca de endereço estilo GPS no cadastro -->
+                        <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">🔍 BUSCAR ENDEREÇO</label>
+                        <div style="position:relative;">
                             <input
                                 type="text"
-                                id="registro-cep"
+                                id="registro-endereco-input"
                                 class="login-input"
-                                placeholder="00000-000"
-                                maxlength="9"
-                                oninput="formatarCEPRegistro(this)"
-                                style="flex:1;">
-                            <button
-                                id="btn-buscar-cep-registro"
-                                onclick="buscarCEPRegistro()"
-                                style="background:#1d4ed8;color:white;border:none;border-radius:8px;padding:14px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">
-                                🔍 Buscar
-                            </button>
+                                placeholder="Digite rua, bairro ou cidade..."
+                                autocomplete="off"
+                                oninput="onEnderecoRegistroInput(this)"
+                                onblur="fecharSugestoesRegistro()"
+                                style="width:100%;box-sizing:border-box;">
+                            <div id="registro-address-suggestions"
+                                 style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;box-shadow:0 4px 16px rgba(0,0,0,0.10);z-index:9999;max-height:220px;overflow-y:auto;">
+                            </div>
                         </div>
-                        <p id="cep-registro-status" style="font-size:12px;margin-bottom:8px;min-height:16px;"></p>
+                        <p id="cep-registro-status" style="font-size:12px;margin:6px 0 8px;min-height:16px;"></p>
 
                         <!-- Mapa de localização -->
                         <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">ZONA SEGURA INICIAL — clique ou arraste o marcador</label>
@@ -296,12 +294,16 @@
         <div style="display:flex;flex-direction:column;gap:12px;">
             <div><label style="font-size:12px;color:#555;font-weight:600;">DESCRIÇÃO</label><input type="text" id="modal-zona-desc" class="modal-input" placeholder="Ex: Minha casa, Trabalho..."></div>
             <div>
-                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">BUSCAR POR CEP</label>
-                <div style="display:flex;gap:8px;align-items:center;">
-                    <input type="text" id="modal-zona-cep" class="modal-input" placeholder="00000-000" maxlength="9" oninput="formatarCEP(this)" style="flex:1;margin-top:0;">
-                    <button id="btn-buscar-cep" onclick="buscarCEP()" style="background:#1d4ed8;color:white;border:none;border-radius:8px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">🔍 Buscar</button>
+                <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">🔍 BUSCAR ENDEREÇO</label>
+                <div style="position:relative;">
+                    <input type="text" id="endereco-zona-input" class="modal-input" placeholder="Digite rua, bairro ou cidade..." autocomplete="off"
+                        oninput="onEnderecoZonaInput(this)" onblur="fecharSugestoesZona()"
+                        style="flex:1;margin-top:0;width:100%;box-sizing:border-box;">
+                    <div id="endereco-zona-suggestions"
+                         style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px;box-shadow:0 4px 16px rgba(0,0,0,0.10);z-index:9999;max-height:220px;overflow-y:auto;">
+                    </div>
                 </div>
-                <p id="cep-status" style="font-size:12px;margin-top:6px;min-height:16px;"></p>
+                <p id="endereco-zona-status" style="font-size:12px;margin-top:6px;min-height:16px;"></p>
             </div>
             <div>
                 <label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">LOCALIZAÇÃO — clique ou arraste o marcador no mapa</label>

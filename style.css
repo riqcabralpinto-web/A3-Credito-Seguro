@@ -62,3 +62,9 @@ body { background-color: var(--dark-bg); color: #fff; font-family: 'Inter', sans
         /* OTP de demonstração */
 .demo-otp-box { background:#f0f9ff; border:1px dashed #93c5fd; border-radius:8px; padding:12px; margin-top:12px; text-align:center; }
     
+/* Busca de endereço estilo GPS */
+.address-suggestion-item:last-child { border-bottom: none !important; }
+#endereco-zona-suggestions::-webkit-scrollbar,
+#registro-address-suggestions::-webkit-scrollbar { width: 4px; }
+#endereco-zona-suggestions::-webkit-scrollbar-thumb,
+#registro-address-suggestions::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
