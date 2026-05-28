@@ -79,75 +79,98 @@ function usarLocalizacaoAtualRegistro() {
     }
 }
 
-/* --- CEP no cadastro --- */
-function formatarCEPRegistro(input) {
-    let val = input.value.replace(/\D/g, '');
-    if (val.length > 5) val = val.slice(0, 5) + '-' + val.slice(5, 8);
-    input.value = val;
-    if (val.replace(/\D/g, '').length === 8) buscarCEPRegistro();
-}
+/* --- Busca de endereço estilo GPS (Cadastro) --- */
+let registroAddressDebounce = null;
 
-async function buscarCEPRegistro() {
-    const cep = document.getElementById('registro-cep').value.replace(/\D/g, '');
-    const btn = document.getElementById('btn-buscar-cep-registro');
-    const status = document.getElementById('cep-registro-status');
+async function buscarEnderecoRegistro(query) {
+    const statusEl = document.getElementById('cep-registro-status');
+    const suggestionsEl = document.getElementById('registro-address-suggestions');
 
-    if (cep.length !== 8) {
-        status.textContent = '❌ CEP deve ter 8 dígitos.';
-        status.style.color = '#ef4444';
+    if (!query || query.length < 3) {
+        suggestionsEl.style.display = 'none';
+        statusEl.textContent = '';
         return;
     }
 
-    status.textContent = '🔍 Buscando endereço...';
-    status.style.color = '#6b7280';
-    btn.disabled = true;
+    statusEl.textContent = '🔍 Buscando...';
+    statusEl.style.color = '#6b7280';
 
     try {
-        const viaCepRes = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const viaCepData = await viaCepRes.json();
-
-        if (viaCepData.erro) {
-            status.textContent = '❌ CEP não encontrado.';
-            status.style.color = '#ef4444';
-            btn.disabled = false;
-            return;
-        }
-
-        const endereco = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade}, ${viaCepData.uf}, Brasil`;
-        status.textContent = `📍 ${viaCepData.logradouro}, ${viaCepData.bairro} — ${viaCepData.localidade}/${viaCepData.uf}`;
-        status.style.color = '#16a34a';
-
-        const nominatimRes = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(endereco)}&format=json&limit=1`,
+        const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&countrycodes=br&addressdetails=1`,
             { headers: { 'Accept-Language': 'pt-BR' } }
         );
-        const nominatimData = await nominatimRes.json();
+        const data = await res.json();
 
-        if (!nominatimData.length) {
-            status.textContent = '⚠ Não foi possível localizar no mapa. Ajuste manualmente.';
-            status.style.color = '#f59e0b';
-            btn.disabled = false;
+        if (!data.length) {
+            statusEl.textContent = '⚠ Nenhum endereço encontrado. Tente ser mais específico.';
+            statusEl.style.color = '#f59e0b';
+            suggestionsEl.style.display = 'none';
             return;
         }
 
-        const lat = parseFloat(nominatimData[0].lat);
-        const lon = parseFloat(nominatimData[0].lon);
+        statusEl.textContent = '';
+        suggestionsEl.innerHTML = '';
+        suggestionsEl.style.display = 'block';
 
-        if (registroMap && registroMarker && registroCircle) {
-            registroMap.setView([lat, lon], 16);
-            registroMarker.setLatLng([lat, lon]);
-            registroCircle.setLatLng([lat, lon]);
-            registroLat = lat;
-            registroLon = lon;
-            updateRegistroMapHint(lat, lon);
-        }
+        data.forEach(place => {
+            const item = document.createElement('div');
+            item.className = 'address-suggestion-item';
+            item.style.cssText = 'padding:10px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;line-height:1.4;transition:background 0.15s;';
+            item.innerHTML = `<span style="font-weight:600;">📍</span> ${place.display_name}`;
+            item.onmouseenter = () => item.style.background = '#fff8f8';
+            item.onmouseleave = () => item.style.background = '';
+            // mousedown dispara antes do onblur do input, evitando o fechamento prematuro do dropdown
+            item.addEventListener('mousedown', (e) => { e.preventDefault(); selecionarEnderecoRegistro(place); });
+            suggestionsEl.appendChild(item);
+        });
 
     } catch (e) {
-        status.textContent = '❌ Erro ao buscar CEP. Verifique sua conexão.';
-        status.style.color = '#ef4444';
+        statusEl.textContent = '❌ Erro ao buscar endereço. Verifique sua conexão.';
+        statusEl.style.color = '#ef4444';
+        suggestionsEl.style.display = 'none';
+    }
+}
+
+function selecionarEnderecoRegistro(place) {
+    const inputEl = document.getElementById('registro-endereco-input');
+    const suggestionsEl = document.getElementById('registro-address-suggestions');
+    const statusEl = document.getElementById('cep-registro-status');
+
+    inputEl.value = place.display_name;
+    suggestionsEl.style.display = 'none';
+
+    const lat = parseFloat(place.lat);
+    const lon = parseFloat(place.lon);
+
+    if (registroMap && registroMarker && registroCircle) {
+        registroMap.setView([lat, lon], 16);
+        registroMarker.setLatLng([lat, lon]);
+        registroCircle.setLatLng([lat, lon]);
+        registroLat = lat;
+        registroLon = lon;
+        updateRegistroMapHint(lat, lon);
     }
 
-    btn.disabled = false;
+    statusEl.textContent = '✅ Endereço selecionado — confirme no mapa';
+    statusEl.style.color = '#16a34a';
+}
+
+function onEnderecoRegistroInput(input) {
+    const query = input.value.trim();
+    clearTimeout(registroAddressDebounce);
+    if (query.length < 3) {
+        document.getElementById('registro-address-suggestions').style.display = 'none';
+        document.getElementById('cep-registro-status').textContent = '';
+        return;
+    }
+    registroAddressDebounce = setTimeout(() => buscarEnderecoRegistro(query), 400);
+}
+
+function fecharSugestoesRegistro() {
+    setTimeout(() => {
+        document.getElementById('registro-address-suggestions').style.display = 'none';
+    }, 200);
 }
 
 /* --- Cadastro --- */

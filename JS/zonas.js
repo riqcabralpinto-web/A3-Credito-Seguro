@@ -74,86 +74,110 @@ function usarLocalizacaoAtual() {
     }
 }
 
-// Busca endereço pelo CEP e centraliza o mapa
-async function buscarCEP() {
-    const cep = document.getElementById('modal-zona-cep').value.replace(/\D/g, '');
-    const btnCep = document.getElementById('btn-buscar-cep');
-    const cepStatus = document.getElementById('cep-status');
+/* --- Busca de endereço estilo GPS (Zona Modal) --- */
+let zonaAddressDebounce = null;
+let zonaAddressSelected = false;
 
-    if (cep.length !== 8) {
-        cepStatus.textContent = '❌ CEP deve ter 8 dígitos.';
-        cepStatus.style.color = '#ef4444';
+async function buscarEnderecoZona(query) {
+    const statusEl = document.getElementById('endereco-zona-status');
+    const suggestionsEl = document.getElementById('endereco-zona-suggestions');
+
+    if (!query || query.length < 3) {
+        suggestionsEl.style.display = 'none';
+        statusEl.textContent = '';
         return;
     }
 
-    cepStatus.textContent = '🔍 Buscando endereço...';
-    cepStatus.style.color = '#6b7280';
-    btnCep.disabled = true;
+    statusEl.textContent = '🔍 Buscando...';
+    statusEl.style.color = '#6b7280';
 
     try {
-        // 1. ViaCEP: busca endereço pelo CEP
-        const viaCepRes = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const viaCepData = await viaCepRes.json();
-
-        if (viaCepData.erro) {
-            cepStatus.textContent = '❌ CEP não encontrado.';
-            cepStatus.style.color = '#ef4444';
-            btnCep.disabled = false;
-            return;
-        }
-
-        const endereco = `${viaCepData.logradouro}, ${viaCepData.bairro}, ${viaCepData.localidade}, ${viaCepData.uf}, Brasil`;
-        cepStatus.textContent = `📍 ${viaCepData.logradouro}, ${viaCepData.bairro} — ${viaCepData.localidade}/${viaCepData.uf}`;
-        cepStatus.style.color = '#16a34a';
-
-        // 2. Nominatim: converte endereço em lat/lon
-        const nominatimRes = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(endereco)}&format=json&limit=1`,
+        const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&countrycodes=br&addressdetails=1`,
             { headers: { 'Accept-Language': 'pt-BR' } }
         );
-        const nominatimData = await nominatimRes.json();
+        const data = await res.json();
 
-        if (!nominatimData.length) {
-            cepStatus.textContent = '⚠ Endereço encontrado mas não foi possível localizar no mapa. Ajuste manualmente.';
-            cepStatus.style.color = '#f59e0b';
-            btnCep.disabled = false;
+        if (!data.length) {
+            statusEl.textContent = '⚠ Nenhum endereço encontrado. Tente ser mais específico.';
+            statusEl.style.color = '#f59e0b';
+            suggestionsEl.style.display = 'none';
             return;
         }
 
-        const lat = parseFloat(nominatimData[0].lat);
-        const lon = parseFloat(nominatimData[0].lon);
+        statusEl.textContent = '';
+        suggestionsEl.innerHTML = '';
+        suggestionsEl.style.display = 'block';
 
-        // 3. Centraliza o mapa nas coordenadas encontradas
-        if (zonaMap && zonaMarker && zonaCircle) {
-            zonaMap.setView([lat, lon], 16);
-            zonaMarker.setLatLng([lat, lon]);
-            zonaCircle.setLatLng([lat, lon]);
-            selectedLat = lat;
-            selectedLon = lon;
-            updateMapHint(lat, lon);
-        }
-
-        // Preenche descrição automaticamente se estiver vazia
-        const descInput = document.getElementById('modal-zona-desc');
-        if (!descInput.value.trim()) {
-            descInput.value = `${viaCepData.bairro}, ${viaCepData.localidade}`;
-        }
+        data.forEach(place => {
+            const item = document.createElement('div');
+            item.className = 'address-suggestion-item';
+            item.style.cssText = 'padding:10px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;line-height:1.4;transition:background 0.15s;';
+            item.innerHTML = `<span style="font-weight:600;">📍</span> ${place.display_name}`;
+            item.onmouseenter = () => item.style.background = '#f0f7ff';
+            item.onmouseleave = () => item.style.background = '';
+            // mousedown dispara antes do onblur do input, evitando o fechamento prematuro do dropdown
+            item.addEventListener('mousedown', (e) => { e.preventDefault(); selecionarEnderecoZona(place); });
+            suggestionsEl.appendChild(item);
+        });
 
     } catch (e) {
-        cepStatus.textContent = '❌ Erro ao buscar CEP. Verifique sua conexão.';
-        cepStatus.style.color = '#ef4444';
+        statusEl.textContent = '❌ Erro ao buscar endereço. Verifique sua conexão.';
+        statusEl.style.color = '#ef4444';
+        suggestionsEl.style.display = 'none';
     }
-
-    btnCep.disabled = false;
 }
 
-// Formata CEP enquanto o usuário digita (00000-000)
-function formatarCEP(input) {
-    let val = input.value.replace(/\D/g, '');
-    if (val.length > 5) val = val.slice(0, 5) + '-' + val.slice(5, 8);
-    input.value = val;
-    // Busca automaticamente quando o CEP está completo
-    if (val.replace(/\D/g, '').length === 8) buscarCEP();
+function selecionarEnderecoZona(place) {
+    const inputEl = document.getElementById('endereco-zona-input');
+    const suggestionsEl = document.getElementById('endereco-zona-suggestions');
+    const statusEl = document.getElementById('endereco-zona-status');
+
+    zonaAddressSelected = true;
+    inputEl.value = place.display_name;
+    suggestionsEl.style.display = 'none';
+
+    const lat = parseFloat(place.lat);
+    const lon = parseFloat(place.lon);
+
+    if (zonaMap && zonaMarker && zonaCircle) {
+        zonaMap.setView([lat, lon], 16);
+        zonaMarker.setLatLng([lat, lon]);
+        zonaCircle.setLatLng([lat, lon]);
+        selectedLat = lat;
+        selectedLon = lon;
+        updateMapHint(lat, lon);
+    }
+
+    statusEl.textContent = `✅ Endereço selecionado — confirme no mapa`;
+    statusEl.style.color = '#16a34a';
+
+    // Preenche descrição automaticamente se estiver vazia
+    const addr = place.address || {};
+    const bairro = addr.suburb || addr.neighbourhood || addr.quarter || '';
+    const cidade = addr.city || addr.town || addr.municipality || '';
+    const descInput = document.getElementById('modal-zona-desc');
+    if (!descInput.value.trim() && (bairro || cidade)) {
+        descInput.value = [bairro, cidade].filter(Boolean).join(', ');
+    }
+}
+
+function onEnderecoZonaInput(input) {
+    zonaAddressSelected = false;
+    const query = input.value.trim();
+    clearTimeout(zonaAddressDebounce);
+    if (query.length < 3) {
+        document.getElementById('endereco-zona-suggestions').style.display = 'none';
+        document.getElementById('endereco-zona-status').textContent = '';
+        return;
+    }
+    zonaAddressDebounce = setTimeout(() => buscarEnderecoZona(query), 400);
+}
+
+function fecharSugestoesZona() {
+    setTimeout(() => {
+        document.getElementById('endereco-zona-suggestions').style.display = 'none';
+    }, 200);
 }
 
 /* --- Modal --- */
@@ -161,8 +185,9 @@ function openAddZona() {
     document.getElementById('modal-zona-title').textContent = 'Adicionar Zona Segura';
     document.getElementById('modal-zona-id').value = '';
     document.getElementById('modal-zona-desc').value = '';
-    document.getElementById('modal-zona-cep').value = '';
-    document.getElementById('cep-status').textContent = '';
+    document.getElementById('endereco-zona-input').value = '';
+    document.getElementById('endereco-zona-status').textContent = '';
+    document.getElementById('endereco-zona-suggestions').style.display = 'none';
     document.getElementById('modal-zona-raio').value = 500;
     clearStatus('modal-status');
     updateRaioLabel(500);
@@ -174,8 +199,9 @@ function openEditZona(id, desc, lat, lon, raio) {
     document.getElementById('modal-zona-title').textContent = 'Editar Zona Segura';
     document.getElementById('modal-zona-id').value = id;
     document.getElementById('modal-zona-desc').value = desc;
-    document.getElementById('modal-zona-cep').value = '';
-    document.getElementById('cep-status').textContent = '';
+    document.getElementById('endereco-zona-input').value = '';
+    document.getElementById('endereco-zona-status').textContent = '';
+    document.getElementById('endereco-zona-suggestions').style.display = 'none';
     document.getElementById('modal-zona-raio').value = raio;
     clearStatus('modal-status');
     updateRaioLabel(raio);
@@ -195,7 +221,7 @@ async function salvarZona() {
 
     clearStatus('modal-status');
     if (!desc) { showStatus('modal-status', 400, '❌ Informe uma descrição para a zona.'); return; }
-    if (!selectedLat || !selectedLon) { showStatus('modal-status', 400, '❌ Selecione uma localização no mapa ou busque pelo CEP.'); return; }
+    if (!selectedLat || !selectedLon) { showStatus('modal-status', 400, '❌ Selecione uma localização no mapa ou pesquise um endereço.'); return; }
     if (!currentUserId) { showStatus('modal-status', 401, '❌ Sessão inválida. Faça login novamente.'); return; }
 
     const dados = { descricao: desc, latitude: selectedLat, longitude: selectedLon, raioMetros: raio };

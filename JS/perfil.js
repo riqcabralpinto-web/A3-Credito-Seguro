@@ -8,33 +8,47 @@ let modoRuaAppAtivo = false;
 async function carregarProtecao() {
     if (!currentToken || !currentUserId) return;
 
-    try {
-        const res = await apiGetUsuario(currentUserId, currentToken);
-        if (res.ok) {
-            const d = await res.json();
-            modoRuaAppAtivo = d.modoRuaAtivo;
-            atualizarToggleModoRua();
-        } else {
-            setModoRuaText('Erro ao carregar', '#ef4444');
-        }
-    } catch (e) {
-        setModoRuaText('Sem conexão', '#ef4444');
+    // Dispara todas as chamadas em paralelo — sem await sequencial
+    const [usuarioRes, zonasRes, alertasRes] = await Promise.allSettled([
+        apiGetUsuario(currentUserId, currentToken),
+        apiGetZonas(currentUserId, currentToken),
+        apiGetAlertas(currentUserId, currentToken)
+    ]);
+
+    // Usuário (compartilhado com carregarPerfil para evitar chamada duplicada)
+    if (usuarioRes.status === 'fulfilled' && usuarioRes.value.ok) {
+        const d = await usuarioRes.value.json();
+        modoRuaAppAtivo = d.modoRuaAtivo;
+        atualizarToggleModoRua();
+        // Preenche perfil junto, sem segunda chamada ao backend
+        const pNome = document.getElementById('perfil-nome');
+        const pTel = document.getElementById('perfil-telefone');
+        const pEmail = document.getElementById('perfil-email2');
+        if (pNome) pNome.value = d.nome || '';
+        if (pTel) pTel.value = d.telefone || '';
+        if (pEmail) pEmail.value = d.emailSecundario || '';
+    } else {
+        setModoRuaText('Erro ao carregar', '#ef4444');
     }
 
-    try {
-        const res = await apiGetZonas(currentUserId, currentToken);
-        if (res.ok) { renderZonas(await res.json()); }
-        else { document.getElementById('zonas-list').innerHTML = '<p class="empty-state">Erro ao carregar zonas.</p>'; }
-    } catch (e) {
-        document.getElementById('zonas-list').innerHTML = '<p class="empty-state">Sem conexão com o servidor.</p>';
+    // Zonas
+    if (zonasRes.status === 'fulfilled' && zonasRes.value.ok) {
+        renderZonas(await zonasRes.value.json());
+    } else {
+        document.getElementById('zonas-list').innerHTML =
+            zonasRes.status === 'rejected'
+                ? '<p class="empty-state">Sem conexão com o servidor.</p>'
+                : '<p class="empty-state">Erro ao carregar zonas.</p>';
     }
 
-    try {
-        const res = await apiGetAlertas(currentUserId, currentToken);
-        if (res.ok) { renderAlertas(await res.json()); }
-        else { document.getElementById('alertas-list').innerHTML = '<p class="empty-state">Erro ao carregar alertas.</p>'; }
-    } catch (e) {
-        document.getElementById('alertas-list').innerHTML = '<p class="empty-state">Sem conexão com o servidor.</p>';
+    // Alertas
+    if (alertasRes.status === 'fulfilled' && alertasRes.value.ok) {
+        renderAlertas(await alertasRes.value.json());
+    } else {
+        document.getElementById('alertas-list').innerHTML =
+            alertasRes.status === 'rejected'
+                ? '<p class="empty-state">Sem conexão com o servidor.</p>'
+                : '<p class="empty-state">Erro ao carregar alertas.</p>';
     }
 }
 
@@ -122,14 +136,19 @@ function renderAlertas(alertas) {
 
 /* --- Perfil --- */
 async function carregarPerfil() {
+    // Dados já preenchidos por carregarProtecao (chamada paralela) — evita request duplicado
     if (!currentToken || !currentUserId) return;
+    const pNome = document.getElementById('perfil-nome');
+    if (pNome && pNome.value) return; // já foi preenchido
     try {
         const res = await apiGetUsuario(currentUserId, currentToken);
         if (res.ok) {
             const d = await res.json();
-            document.getElementById('perfil-nome').value = d.nome || '';
-            document.getElementById('perfil-telefone').value = d.telefone || '';
-            document.getElementById('perfil-email2').value = d.emailSecundario || '';
+            if (pNome) pNome.value = d.nome || '';
+            const pTel = document.getElementById('perfil-telefone');
+            const pEmail = document.getElementById('perfil-email2');
+            if (pTel) pTel.value = d.telefone || '';
+            if (pEmail) pEmail.value = d.emailSecundario || '';
         }
     } catch (e) {}
 }
