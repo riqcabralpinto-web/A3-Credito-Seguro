@@ -5,11 +5,218 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crédito Seguro | Prevenção contra Fraudes 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos e Variáveis de Tema Claro Dinâmico */
+        body.light-mode {
+            background-color: #f9fafb !important;
+            color: #111827 !important;
+        }
+        body.light-mode #main-view {
+            background-color: #ffffff;
+        }
+        body.light-mode #sobre {
+            background-color: #f3f4f6;
+        }
+        body.light-mode #sobre p {
+            color: #374151;
+        }
+        body.light-mode #prevencao {
+            background-color: #ffffff;
+        }
+        body.light-mode #prevencao h2, body.light-mode #prevencao p {
+            color: #111827;
+        }
+        body.light-mode #prevencao .text-gray-400 {
+            color: #4b5563;
+        }
+        body.light-mode .netflix-card {
+            background-color: #f3f4f6;
+            color: #111827;
+            border-color: #e5e7eb;
+        }
+        body.light-mode .netflix-card p {
+            color: #4b5563;
+        }
+        body.light-mode #multimedia {
+            background-color: #f3f4f6;
+            border-color: #e5e7eb;
+        }
+        body.light-mode #multimedia h2, body.light-mode #multimedia p {
+            color: #111827;
+        }
+        body.light-mode #multimedia .text-gray-400 {
+            color: #4b5563;
+        }
+        body.light-mode .audio-player {
+            background-color: #ffffff;
+            border-color: #e5e7eb;
+        }
+        body.light-mode .audio-player p {
+            color: #111827;
+        }
+        body.light-mode .audio-player audio {
+            filter: none;
+        }
+        body.light-mode .bg-zinc-900/50 {
+            background-color: rgba(243, 244, 246, 0.8);
+            border-color: #e5e7eb;
+            color: #111827;
+        }
+        body.light-mode .bg-zinc-900/50 h4 {
+            color: #111827;
+        }
+        body.light-mode .bg-zinc-900/50 p, body.light-mode .bg-zinc-900/50 ul {
+            color: #374151;
+        }
+        body.light-mode footer {
+            background-color: #f3f4f6;
+            color: #111827;
+            border-color: #e5e7eb;
+        }
+        body.light-mode footer p {
+            color: #4b5563;
+        }
+        body.light-mode .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #e5e7eb;
+        }
+        body.light-mode .glass-nav a {
+            color: #374151;
+        }
+        body.light-mode .glass-nav a:hover {
+            color: #dc2626;
+        }
+        body.light-mode .bank-app {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        #success-container {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        #success-container.theme-dark {
+            background-color: #121212 !important;
+        }
+        #success-container.theme-dark #success-subtitle {
+            color: #a1a1aa !important;
+        }
+        #success-container.theme-dark .bank-app {
+            background-color: #1c1c1e !important;
+            color: #ffffff !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6) !important;
+            border: 1px solid #2c2c2e;
+        }
+        /* Força a cor de fundo de elementos internos brancos para escuro */
+        #success-container.theme-dark .bank-app [style*="background:white"],
+        #success-container.theme-dark .bank-app [style*="background: white"],
+        #success-container.theme-dark .bank-app [style*="background:#fff"],
+        #success-container.theme-dark .bank-app [style*="background: #fff"],
+        #success-container.theme-dark .bank-app #panel-conta,
+        #success-container.theme-dark .bank-app #panel-protecao,
+        #success-container.theme-dark .bank-app #panel-perfil {
+            background-color: #1c1c1e !important;
+            background: #1c1c1e !important;
+            color: #ffffff !important;
+        }
+        /* Bordas divisórias elegantes para o Modo Escuro */
+        #success-container.theme-dark .bank-app div,
+        #success-container.theme-dark .bank-app [style*="border-bottom"],
+        #success-container.theme-dark .bank-app [style*="border-top"] {
+            border-bottom-color: #2c2c2e !important;
+            border-top-color: #2c2c2e !important;
+            border-color: #2c2c2e !important;
+        }
+        /* Abas internas do aplicativo */
+        #success-container.theme-dark .bank-app .app-tab {
+            background-color: #252525 !important;
+            color: #a1a1aa !important;
+            border-bottom-color: #3a3a3c !important;
+        }
+        #success-container.theme-dark .bank-app .app-tab.active {
+            background-color: #1c1c1e !important;
+            color: #ff4d6d !important;
+            border-bottom: 2px solid #ff4d6d !important;
+        }
+        /* Círculos de ícones do extrato */
+        #success-container.theme-dark .bank-app div[style*="background:#f5f5f5"],
+        #success-container.theme-dark .bank-app div[style*="background: #f5f5f5"] {
+            background-color: #2c2c2e !important;
+            background: #2c2c2e !important;
+        }
+        /* Botões de atalho (Pix, Boleto, Cartão...) */
+        #success-container.theme-dark .bank-app .app-btn-small {
+            background-color: #2c2c2e !important;
+            background: #2c2c2e !important;
+            color: #ffffff !important;
+        }
+        /* Caixa de Alerta do Modo Rua */
+        #success-container.theme-dark .bank-app div[style*="background:#fff8f8"],
+        #success-container.theme-dark .bank-app div[style*="background: #fff8f8"] {
+            background-color: rgba(204, 9, 47, 0.15) !important;
+            background: rgba(204, 9, 47, 0.15) !important;
+            border-color: rgba(204, 9, 47, 0.4) !important;
+        }
+        /* Ajuste de textos gerais outrora muito escuros */
+        #success-container.theme-dark .bank-app p,
+        #success-container.theme-dark .bank-app span,
+        #success-container.theme-dark .bank-app h4,
+        #success-container.theme-dark .bank-app label {
+            color: #e5e5ea !important;
+        }
+        /* Garantia de contraste para valores de transações e links */
+        #success-container.theme-dark .bank-app [style*="color:#CC092F"],
+        #success-container.theme-dark .bank-app [style*="color: #CC092F"] {
+            color: #ff4d6d !important;
+        }
+        #success-container.theme-dark .bank-app [style*="color:#ef4444"],
+        #success-container.theme-dark .bank-app [style*="color: #ef4444"] {
+            color: #ff5a5a !important;
+        }
+        #success-container.theme-dark .bank-app [style*="color:#22c55e"],
+        #success-container.theme-dark .bank-app [style*="color: #22c55e"] {
+            color: #4ade80 !important;
+        }
+        /* Inputs de Perfil */
+        #success-container.theme-dark .bank-app .perfil-input {
+            background-color: #2c2c2e !important;
+            border-color: #3a3a3c !important;
+            color: #ffffff !important;
+        }
+        #success-container.theme-dark .bank-app .empty-state {
+            color: #8e8e93 !important;
+        }
+        /* Ajuste específico para itens de Zonas Seguras e Alertas no Modo Escuro */
+        #success-container.theme-dark .bank-app #zonas-list > div,
+        #success-container.theme-dark .bank-app #alertas-list > div,
+        #success-container.theme-dark .bank-app .zona-item,
+        #success-container.theme-dark .bank-app .alerta-item {
+            background-color: #2c2c2e !important;
+            background: #2c2c2e !important;
+            border-color: #3a3a3c !important;
+            color: #ffffff !important;
+        }
+        #success-container.theme-dark .bank-app #zonas-list h4,
+        #success-container.theme-dark .bank-app #alertas-list h4 {
+            color: #ffffff !important;
+        }
+        #success-container.theme-dark .bank-app #zonas-list p,
+        #success-container.theme-dark .bank-app #alertas-list p,
+        #success-container.theme-dark .bank-app #zonas-list span,
+        #success-container.theme-dark .bank-app #alertas-list span {
+            color: #e5e5ea !important;
+        }
+        /* Botões de exclusão ou edição de zonas em modo escuro */
+        #success-container.theme-dark .bank-app #zonas-list button,
+        #success-container.theme-dark .bank-app #zonas-list .btn-delete,
+        #success-container.theme-dark .bank-app #zonas-list svg {
+            color: #ff4d6d !important;
+            fill: currentColor;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,7 +229,7 @@
         <div class="hidden md:flex items-center space-x-8 text-sm font-semibold uppercase tracking-wider">
             <a href="#home" onclick="showMainPage()" class="hover:text-red-600 transition">Início</a>
             <a href="#sobre" onclick="showMainPage()" class="hover:text-red-600 transition">Sobre</a>
-            <a href="#prevenção" onclick="showMainPage()" class="hover:text-red-600 transition">Prevenção</a>
+            <a href="#prevencao" onclick="showMainPage()" class="hover:text-red-600 transition">Prevenção</a>
             <a href="#multimedia" onclick="showMainPage()" class="hover:text-red-600 transition">Multimídia</a>
             <button onclick="showSimulation()" class="btn-netflix px-6 py-2 rounded text-white font-bold transition">Simulação</button>
         </div>
@@ -37,7 +244,7 @@
             <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight drop-shadow-2xl">Não seja o próximo alvo.</h1>
             <p class="text-lg md:text-xl text-gray-200 mb-10 drop-shadow-md font-medium">O guia essencial para identificar fraudes de crédito em 2026. <br class="hidden md:block"> Proteja o seu patrimônio contra o golpe da taxa antecipada.</p>
             <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <a href="#prevenção" class="btn-netflix px-8 py-4 rounded font-bold uppercase tracking-widest text-sm">Ver Guia de Prevenção</a>
+                <a href="#prevencao" class="btn-netflix px-8 py-4 rounded font-bold uppercase tracking-widest text-sm">Ver Guia de Prevenção</a>
                 <a href="#sobre" class="bg-black/50 backdrop-blur-sm hover:bg-zinc-800/80 px-8 py-4 rounded font-bold uppercase tracking-widest text-sm transition border border-white/20">Nossa Missão</a>
             </div>
         </div>
@@ -50,12 +257,12 @@
                 <h2 class="text-red-600 font-bold uppercase tracking-widest text-sm mb-4">A Realidade em 2026</h2>
                 <h3 class="text-3xl md:text-4xl font-bold mb-6">O que é o Crédito Seguro?</h3>
                 <p class="text-gray-300 mb-6 leading-relaxed">No Brasil, um tipo de fraude financeira que persiste há muito tempo e continua bastante comum em 2026 é o <strong>golpe do empréstimo</strong>, também conhecido como golpe da taxa antecipada ou empréstimo falso.</p>
-                <p class="text-gray-300 leading-relaxed">O <strong>Crédito Seguro</strong> surge como uma iniciativa para conscientizar e proteger a população contra esse tipo de crime.</p>
+                <p class="text-gray-300 leading-relaxed">O <strong>Crédito Seguro</strong> surge como uma initiative para conscientizar e proteger a população contra esse tipo de crime.</p>
             </div>
         </div>
     </section>
 
-    <section id="prevenção" class="py-24 px-6">
+    <section id="prevencao" class="py-24 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16"><h2 class="text-4xl font-bold mb-4">Manual de Sobrevivência Financeira</h2><p class="text-gray-400">Entenda a anatomia do golpe e proteja-se.</p></div>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
@@ -67,7 +274,7 @@
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="bg-zinc-900/50 p-8 rounded-2xl border border-white/5"><h4 class="font-bold text-xl mb-6 flex items-center gap-2"><i data-lucide="shield" class="text-red-600"></i> Como se Proteger</h4><ul class="space-y-4 text-sm text-gray-400"><li class="flex items-start gap-3"><i data-lucide="x-circle" class="text-red-600 w-5 h-5 shrink-0"></i> Nunca pague taxas antecipadas</li><li class="flex items-start gap-3"><i data-lucide="check-circle" class="text-green-600 w-5 h-5 shrink-0"></i> Use apenas canais oficiais</li><li class="flex items-start gap-3"><i data-lucide="alert-triangle" class="text-yellow-600 w-5 h-5 shrink-0"></i> Pesquise antes de contratar</li></ul></div>
                 <div class="bg-zinc-900/50 p-8 rounded-2xl border border-white/5"><h4 class="font-bold text-xl mb-6 flex items-center gap-2"><i data-lucide="frown" class="text-red-600"></i> Impactos</h4><p class="text-sm text-gray-400 mb-4">Ansiedade, vergonha e insegurança são marcas profundas. Idosos são as maiores vítimas.</p><div class="text-xs font-bold text-red-500 uppercase">Dívidas em seu nome • Nome Negativado</div></div>
-                <div class="bg-zinc-900/50 p-8 rounded-2xl border border-red-600/20"><h4 class="font-bold text-xl mb-6 flex items-center gap-2"><i data-lucide="life-buoy" class="text-red-600"></i> Em Caso de Golpe</h4><p class="text-sm text-gray-400 mb-6">Interrompa o contato, não pague nada e registre um boletim de ocorrência imediatamente.</p><a href="https://www.consumidor.gov.br" target="_blank" class="block text-center bg-zinc-800 py-3 rounded text-xs font-bold hover:bg-zinc-700 transition uppercase">Denunciar agora</a></div>
+                <div class="bg-zinc-900/50 p-8 rounded-2xl border border-red-600/20"><h4 class="font-bold text-xl mb-6 flex items-center gap-2"><i data-lucide="life-buoy" class="text-red-600"></i> Em Caso de Golpe</h4><p class="text-sm text-gray-400 mb-6">Interrompa o contato, não pague nada e registre um boletim de ocorrência imediatamente.</p><a href="https://www.consumidor.gov.br" target="_blank" rel="noopener noreferrer" class="block text-center bg-zinc-800 py-3 rounded text-xs font-bold hover:bg-zinc-700 transition uppercase">Denunciar agora</a></div>
             </div>
         </div>
     </section>
@@ -90,7 +297,7 @@
 </main>
 
 <!-- SIMULAÇÃO -->
-<main id="simulation-view" class="hidden-page" style="min-height:100vh;padding-top:80px;background:#111;">
+<div id="simulation-view" role="region" aria-label="Simulação de Segurança" class="hidden-page" style="min-height:100vh;padding-top:80px;background:#111;">
     <div style="background:#1a1a1a;border-bottom:1px solid #2a2a2a;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;">
         <button onclick="showMainPage()" style="background:none;border:none;color:#aaa;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:13px;"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Voltar ao site</button>
         <span style="font-size:12px;color:#555;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Simulação Educativa — Modo Rua</span>
@@ -117,7 +324,7 @@
     <div id="sim-register" class="sim-screen" style="flex-direction:column;background:#111;">
         <div class="bradesco-header">
             <div class="bradesco-logo">
-                <img src="imagem/bradesco.png" style="width: 200px;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Banco_Bradesco_logo.svg/1024px-Banco_Bradesco_logo.svg.png'">
+                <img src="imagem/bradesco.png" alt="Logótipo Bradesco" style="width: 200px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Banco_Bradesco_logo.svg/1024px-Banco_Bradesco_logo.svg.png'">
             </div>
             <span style="font-size:12px;opacity:0.8;">SIMULAÇÃO EDUCATIVA</span>
         </div>
@@ -181,7 +388,7 @@
     <div id="sim-login" class="sim-screen" style="flex-direction:column;background:#111;">
         <div class="bradesco-header">
             <div class="bradesco-logo">
-                <img src="imagem/bradesco.png" style="width: 200px;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Banco_Bradesco_logo.svg/1024px-Banco_Bradesco_logo.svg.png'">
+                <img src="imagem/bradesco.png" alt="Logótipo Bradesco" style="width: 200px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Banco_Bradesco_logo.svg/1024px-Banco_Bradesco_logo.svg.png'">
             </div>
             <div style="display:flex;align-items:center;gap:8px;"><div style="width:8px;height:8px;background:#4ade80;border-radius:50%;"></div><span style="font-size:12px;opacity:0.8;">MODO RUA ATIVO</span></div>
         </div>
@@ -201,20 +408,27 @@
     </div>
 
     <!-- ACESSO NEGADO -->
-    <div id="sim-denied" class="sim-screen" style="align-items:center;justify-content:center;padding:48px 16px;background:#0d0d0d;">
-        <div class="denied-card">
-            <div class="icon-circle" style="background:rgba(204,9,47,0.15);"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#CC092F" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
-            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(204,9,47,0.12);color:#ff6b6b;padding:6px 16px;border-radius:100px;font-size:12px;font-weight:700;margin-bottom:16px;text-transform:uppercase;">🔒 Acesso Bloqueado</div>
-            <h2 style="font-size:22px;font-weight:700;margin:0 0 12px;">Você está fora da zona segura</h2>
-            <p style="color:#888;font-size:14px;line-height:1.7;margin-bottom:28px;">O Modo Rua detectou que você está em um local não autorizado. O acesso foi bloqueado para proteger sua conta.</p>
-            <div style="background:#111;border-radius:12px;padding:20px;margin-bottom:28px;text-align:left;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="color:#666;font-size:13px;">Sua localização</span><span style="color:#ff6b6b;font-size:13px;font-weight:600;" id="denied-location">—</span></div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="color:#666;font-size:13px;">Zona segura</span><span style="color:#4ade80;font-size:13px;font-weight:600;">Localização cadastrada</span></div>
-                <div style="display:flex;justify-content:space-between;"><span style="color:#666;font-size:13px;">Código HTTP</span><span style="color:#ff6b6b;font-size:13px;font-weight:600;">Acesso Proibido</span></div>
+    <div id="sim-denied" class="sim-screen" style="flex-direction:column;background:#111;">
+        <div class="bradesco-header">
+            <div class="bradesco-logo">
+                <img src="imagem/bradesco.png" alt="Logótipo Bradesco" style="width: 200px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Banco_Bradesco_logo.svg/1024px-Banco_Bradesco_logo.svg.png'">
             </div>
-            <button class="btn-red" style="margin-bottom:12px;" onclick="goToEmergency()">🆘 Usar acesso de emergência</button>
-            <button class="btn-outline-red" onclick="simShow('sim-login');getLocation();">Tentar novamente</button>
-            <p style="color:#555;font-size:12px;margin-top:20px;">Esta tentativa foi registrada nos seus alertas de segurança</p>
+            <span style="font-size:12px;opacity:0.8;">SIMULAÇÃO EDUCATIVA</span>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:#f0f0f0;">
+            <div class="denied-card" style="margin-top:0;">
+                <div class="icon-circle" style="background:rgba(204,9,47,0.15);"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#CC092F" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+                <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(204,9,47,0.12);color:#ff6b6b;padding:6px 16px;border-radius:100px;font-size:12px;font-weight:700;margin-bottom:16px;text-transform:uppercase;">🔒 Acesso Bloqueado</div>
+                <h2 style="font-size:22px;font-weight:700;margin:0 0 12px;color:#111;">Você está fora da zona segura</h2>
+                <p style="color:#666;font-size:14px;line-height:1.7;margin-bottom:28px;">O Modo Rua detectou que você está em um local não autorizado. O acesso foi bloqueado para proteger sua conta.</p>
+                <div style="background:#fafafa;border:1px solid #eee;border-radius:12px;padding:20px;margin-bottom:28px;text-align:left;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="color:#666;font-size:13px;">Sua localização</span><span style="color:#ff6b6b;font-size:13px;font-weight:600;" id="denied-location">—</span></div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="color:#666;font-size:13px;">Zona segura</span><span style="color:#4ade80;font-size:13px;font-weight:600;">Localização cadastrada</span></div>
+                </div>
+                <button class="btn-red" style="margin-bottom:12px;" onclick="goToEmergency()">🆘 Usar acesso de emergência</button>
+                <button class="btn-outline-red" onclick="simShow('sim-login');getLocation();">Tentar novamente</button>
+                <p style="color:#888;font-size:12px;margin-top:20px;">Esta tentativa foi registrada nos seus alertas de segurança</p>
+            </div>
         </div>
     </div>
 
@@ -229,7 +443,7 @@
                 <p style="font-size:11px;color:#6b7280;margin:0;">Verifique o código na tabela <strong>otps</strong> do banco de dados (pgAdmin)</p>
             </div>
             <div id="emergency-status" class="status-msg"></div>
-            <div style="margin-bottom:20px;"><label style="font-size:12px;color:#888;font-weight:600;display:block;margin-bottom:10px;text-transform:uppercase;">Digite o código OTP</label><input type="text" id="otp-code" class="otp-input" placeholder="000000" maxlength="6"></div>
+            <div style="margin-bottom:20px;"><label style="font-size:12px;color:#888;font-weight:600;display:block;margin-bottom:10px;text-transform:uppercase;">Digite o código</label><input type="text" id="otp-code" class="otp-input" placeholder="000000" maxlength="6"></div>
             <button class="btn-red" id="btn-otp" style="margin-bottom:12px;" onclick="doOTP()">Verificar código</button>
             <button class="btn-outline-red" onclick="requestOTP()">Reenviar código</button>
             <button onclick="simShow('sim-login');getLocation();" style="background:none;border:none;color:#555;font-size:13px;cursor:pointer;margin-top:12px;width:100%;">← Voltar ao login</button>
@@ -237,67 +451,92 @@
     </div>
 
     <!-- SUCESSO -->
-    <div id="sim-success" class="sim-screen" style="align-items:center;justify-content:center;padding:48px 16px;background:#0d0d0d;">
-        <div style="max-width:440px;width:100%;text-align:center;">
-            <div style="margin-bottom:20px;">
-                <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(74,222,128,0.1);color:#4ade80;padding:8px 20px;border-radius:100px;font-size:13px;font-weight:700;margin-bottom:8px;" id="success-badge">✓ Acesso Liberado</div>
-                <p style="color:#aaa;font-size:13px;" id="success-subtitle">Localização verificada com sucesso</p>
+    <div id="sim-success" class="sim-screen" style="flex-direction:column;background:#111;">
+        <div class="bradesco-header">
+            <div class="bradesco-logo">
+                <img src="imagem/bradesco.png" alt="Logótipo Bradesco" style="width: 200px; object-fit: contain;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Banco_Bradesco_logo.svg/1024px-Banco_Bradesco_logo.svg.png'">
             </div>
-            <div class="bank-app">
-                <div style="background:#CC092F;padding:20px 24px;color:white;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                        <div><p style="font-size:12px;opacity:0.7;margin:0;">Olá,</p><p style="font-weight:700;font-size:17px;margin:0;" id="success-name">Usuário</p></div>
-                        <div style="width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:14px;"><p style="font-size:12px;opacity:0.7;margin:0 0 4px;">Saldo disponível</p><p style="font-size:24px;font-weight:700;margin:0;">R$ 4.827,50</p></div>
-                </div>
-                <div style="background:white;display:flex;border-bottom:1px solid #eee;">
-                    <div class="app-tab active" id="tab-conta" onclick="switchTab('conta')">Minha Conta</div>
-                    <div class="app-tab" id="tab-protecao" onclick="switchTab('protecao')">🛡️ Proteção</div>
-                    <div class="app-tab" id="tab-perfil" onclick="switchTab('perfil')">👤 Perfil</div>
-                </div>
-                <!-- Conta -->
-                <div id="panel-conta" style="background:white;">
-                    <div style="padding:20px 24px;border-bottom:1px solid #eee;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:13px;color:#333;font-weight:600;">Extrato recente</span><span style="font-size:12px;color:#CC092F;font-weight:600;">Ver tudo</span></div><div style="display:flex;flex-direction:column;gap:12px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;background:#f5f5f5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">🛒</div><div><p style="margin:0;font-size:13px;color:#222;font-weight:500;">Supermercado</p><p style="margin:0;font-size:11px;color:#888;">Hoje, 14h22</p></div></div><span style="color:#ef4444;font-size:13px;font-weight:600;">- R$ 87,30</span></div><div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;background:#f5f5f5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">💰</div><div><p style="margin:0;font-size:13px;color:#222;font-weight:500;">Salário</p><p style="margin:0;font-size:11px;color:#888;">01/05, 08h00</p></div></div><span style="color:#22c55e;font-size:13px;font-weight:600;">+ R$ 3.200,00</span></div></div></div>
-                    <div style="background:white;padding:20px 24px;display:flex;gap:12px;"><div class="app-btn-small">💸<br>Pix</div><div class="app-btn-small">📄<br>Boleto</div><div class="app-btn-small">💳<br>Cartão</div><div class="app-btn-small">📊<br>Invest.</div></div>
-                </div>
-                <!-- Proteção -->
-                <div id="panel-protecao" style="background:white;display:none;padding:20px 24px;">
-                    <!-- Toggle Modo Rua — botão separado para evitar conflito de eventos -->
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff8f8;border:1px solid #ffd7d7;border-radius:10px;margin-bottom:20px;">
-                        <div style="flex:1;min-width:0;">
-                            <p style="font-weight:700;font-size:14px;margin:0 0 3px;color:#111;">Modo Rua</p>
-                            <p style="font-size:12px;margin:0;white-space:normal;word-break:break-word;" id="modo-rua-status-text">—</p>
-                        </div>
-                        <!-- Botão separado em vez de onclick no div para evitar problemas de clique -->
-                        <button
-                            id="btn-toggle-modo-rua"
-                            onclick="toggleModoRuaApp()"
-                            style="background:none;border:none;padding:0;cursor:pointer;flex-shrink:0;margin-left:12px;">
-                            <div class="toggle-track" id="toggle-modo-rua-app"><div class="toggle-thumb"></div></div>
+            <span style="font-size:12px;opacity:0.8;">SIMULAÇÃO EDUCATIVA</span>
+        </div>
+        <div id="success-container" style="flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:#f0f0f0;">
+            <div style="max-width:440px;width:100%;text-align:center;">
+                <div style="margin-bottom:20px;">
+                    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(74,222,128,0.1);color:#22c55e;padding:8px 20px;border-radius:100px;font-size:13px;font-weight:700;margin-bottom:8px;" id="success-badge">✓ Acesso Liberado</div>
+                    <p style="color:#666;font-size:13px;margin-bottom:12px;" id="success-subtitle">Localização verificada com sucesso</p>
+                    
+                    <!-- Seleção de Temas (Sol e Lua) -->
+                    <div style="display:flex;justify-content:center;gap:12px;margin-top:14px;margin-bottom:6px;">
+                        <button onclick="setTheme('light')" style="background:#ffffff;color:#111827;border:1px solid #ddd;border-radius:20px;padding:8px 16px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.05);transition:all 0.2s;" class="hover:bg-gray-100">
+                            <i data-lucide="sun" style="width:16px;height:16px;color:#eab308;"></i> Claro
+                        </button>
+                        <button onclick="setTheme('dark')" style="background:#1f1f1f;color:#ffffff;border:1px solid #333;border-radius:20px;padding:8px 16px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.15);transition:all 0.2s;" class="hover:bg-zinc-800">
+                            <i data-lucide="moon" style="width:16px;height:16px;color:#a855f7;"></i> Escuro
                         </button>
                     </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><p style="font-weight:700;font-size:14px;color:#111;margin:0;">Zonas Seguras</p><button onclick="openAddZona()" style="background:#CC092F;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">+ Adicionar</button></div>
-                    <div id="zonas-list"><p class="empty-state">Carregando...</p></div>
-                    <div style="margin-top:16px;"><p style="font-weight:700;font-size:14px;color:#111;margin:0 0 10px;">Alertas recentes</p><div id="alertas-list"><p class="empty-state">Carregando...</p></div></div>
                 </div>
-                <!-- Perfil -->
-                <div id="panel-perfil" style="background:white;display:none;padding:20px 24px;">
-                    <p style="font-weight:700;font-size:14px;color:#111;margin:0 0 16px;">Editar Perfil</p>
-                    <div id="perfil-status" class="status-msg"></div>
-                    <div style="display:flex;flex-direction:column;gap:12px;">
-                        <div><label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">NOME</label><input type="text" id="perfil-nome" class="perfil-input" placeholder="Seu nome completo"></div>
-                        <div><label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">TELEFONE</label><input type="tel" id="perfil-telefone" class="perfil-input" placeholder="(11) 99999-9999"></div>
-                        <div><label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">E-MAIL SECUNDÁRIO</label><input type="email" id="perfil-email2" class="perfil-input" placeholder="email.secundario@exemplo.com"></div>
-                        <button onclick="salvarPerfil()" style="background:#CC092F;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;">Salvar alterações</button>
+                <div class="bank-app" style="text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                    <div style="background:#CC092F;padding:20px 24px;color:white;border-radius:12px 12px 0 0;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                            <div><p style="font-size:12px;opacity:0.7;margin:0;">Olá,</p><p style="font-weight:700;font-size:17px;margin:0;" id="success-name">Usuário</p></div>
+                            <div style="width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                        </div>
+                        <!-- Saldo com Olho de Ocultação -->
+                        <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <p style="font-size:12px;opacity:0.7;margin:0 0 4px;">Saldo disponível</p>
+                                <p id="balance-value" style="font-size:24px;font-weight:700;margin:0;">R$ 4.827,50</p>
+                            </div>
+                            <button onclick="toggleBalanceVisibility()" style="background:none;border:none;color:white;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;" aria-label="Mostrar ou ocultar saldo">
+                                <i id="balance-eye-icon" data-lucide="eye" style="width:20px;height:20px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="background:white;display:flex;border-bottom:1px solid #eee;">
+                        <div class="app-tab active" id="tab-conta" onclick="switchTab('conta')">Minha Conta</div>
+                        <div class="app-tab" id="tab-protecao" onclick="switchTab('protecao')">🛡️ Proteção</div>
+                        <div class="app-tab" id="tab-perfil" onclick="switchTab('perfil')">👤 Perfil</div>
+                    </div>
+                    <!-- Conta -->
+                    <div id="panel-conta" style="background:white;">
+                        <div style="padding:20px 24px;border-bottom:1px solid #eee;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:13px;color:#333;font-weight:600;">Extrato recente</span><span style="font-size:12px;color:#CC092F;font-weight:600;">Ver tudo</span></div><div style="display:flex;flex-direction:column;gap:12px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;background:#f5f5f5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">🛒</div><div><p style="margin:0;font-size:13px;color:#222;font-weight:500;">Supermercado</p><p style="margin:0;font-size:11px;color:#888;">Hoje, 14h22</p></div></div><span style="color:#ef4444;font-size:13px;font-weight:600;">- R$ 87,30</span></div><div style="display:flex;justify-content:space-between;align-items:center;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;background:#f5f5f5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">💰</div><div><p style="margin:0;font-size:13px;color:#222;font-weight:500;">Salário</p><p style="margin:0;font-size:11px;color:#888;">01/05, 08h00</p></div></div><span style="color:#22c55e;font-size:13px;font-weight:600;">+ R$ 3.200,00</span></div></div></div>
+                        <div style="background:white;padding:20px 24px;display:flex;gap:12px;"><div class="app-btn-small">💸<br>Pix</div><div class="app-btn-small">📄<br>Boleto</div><div class="app-btn-small">💳<br>Cartão</div><div class="app-btn-small">📊<br>Invest.</div></div>
+                    </div>
+                    <!-- Proteção -->
+                    <div id="panel-protecao" style="background:white;display:none;padding:20px 24px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff8f8;border:1px solid #ffd7d7;border-radius:10px;margin-bottom:20px;">
+                            <div style="flex:1;min-width:0;">
+                                <p style="font-weight:700;font-size:14px;margin:0 0 3px;color:#111;">Modo Rua</p>
+                                <p style="font-size:12px;margin:0;white-space:normal;word-break:break-word;" id="modo-rua-status-text">—</p>
+                            </div>
+                            <button
+                                id="btn-toggle-modo-rua"
+                                onclick="toggleModoRuaApp()"
+                                style="background:none;border:none;padding:0;cursor:pointer;flex-shrink:0;margin-left:12px;">
+                                <div class="toggle-track" id="toggle-modo-rua-app"><div class="toggle-thumb"></div></div>
+                            </button>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><p style="font-weight:700;font-size:14px;color:#111;margin:0;">Zonas Seguras</p><button onclick="openAddZona()" style="background:#CC092F;color:white;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">+ Adicionar</button></div>
+                        <div id="zonas-list"><p class="empty-state">Carregando...</p></div>
+                        <div style="margin-top:16px;"><p style="font-weight:700;font-size:14px;color:#111;margin:0 0 10px;">Alertas recentes</p><div id="alertas-list"><p class="empty-state">Carregando...</p></div></div>
+                    </div>
+                    <!-- Perfil -->
+                    <div id="panel-perfil" style="background:white;display:none;padding:20px 24px;">
+                        <p style="font-weight:700;font-size:14px;color:#111;margin:0 0 16px;">Editar Perfil</p>
+                        <div id="perfil-status" class="status-msg"></div>
+                        <div style="display:flex;flex-direction:column;gap:12px;">
+                            <div><label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">NOME</label><input type="text" id="perfil-nome" class="perfil-input" placeholder="Seu nome completo"></div>
+                            <div><label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">TELEFONE</label><input type="tel" id="perfil-telefone" class="perfil-input" placeholder="(11) 99999-9999"></div>
+                            <div><label style="font-size:12px;color:#555;font-weight:600;display:block;margin-bottom:4px;">E-MAIL SECUNDÁRIO</label><input type="email" id="perfil-email2" class="perfil-input" placeholder="email.secundario@exemplo.com"></div>
+                            <button onclick="salvarPerfil()" style="background:#CC092F;color:white;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;">Salvar alterações</button>
+                        </div>
                     </div>
                 </div>
+                <button class="btn-outline-red" style="max-width:440px;margin-top:20px;" onclick="simShow('sim-login');getLocation();">Simular novamente</button>
+                <button onclick="showMainPage()" style="background:none;border:none;color:#555;font-size:13px;cursor:pointer;margin-top:10px;width:100%;">Voltar ao site</button>
             </div>
-            <button class="btn-outline-red" style="max-width:440px;margin-top:20px;" onclick="simShow('sim-login');getLocation();">Simular novamente</button>
-            <button onclick="showMainPage()" style="background:none;border:none;color:#555;font-size:13px;cursor:pointer;margin-top:10px;width:100%;">Voltar ao site</button>
         </div>
     </div>
-</main>
+</div>
 
 <!-- Modal Zona com Mapa e CEP -->
 <div class="modal-overlay" id="modal-zona">
@@ -350,6 +589,39 @@
 <script src="JS/zonas.js"></script>
 <script src="JS/perfil.js"></script>
 <script src="JS/main.js"></script>
+
+<script>
+    let isBalanceVisible = true;
+    function toggleBalanceVisibility() {
+        isBalanceVisible = !isBalanceVisible;
+        const balanceVal = document.getElementById('balance-value');
+        const eyeIcon = document.getElementById('balance-eye-icon');
+        
+        if (balanceVal && eyeIcon) {
+            if (isBalanceVisible) {
+                balanceVal.textContent = "R$ 4.827,50";
+                eyeIcon.setAttribute('data-lucide', 'eye');
+            } else {
+                balanceVal.textContent = "R$ ••••••";
+                eyeIcon.setAttribute('data-lucide', 'eye-off');
+            }
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+    }
+
+    function setTheme(theme) {
+        const successContainer = document.getElementById('success-container');
+        if (successContainer) {
+            if (theme === 'dark') {
+                successContainer.classList.add('theme-dark');
+            } else {
+                successContainer.classList.remove('theme-dark');
+            }
+        }
+    }
+</script>
 
 </body>
 </html>
