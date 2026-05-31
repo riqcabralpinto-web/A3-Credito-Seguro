@@ -1,0 +1,167 @@
+/* ============================================================
+   theme.css — Variáveis, reset, tema claro e tema escuro
+   ============================================================ */
+
+:root {
+    --netflix-red: #E50914;
+    --dark-bg: #141414;
+    --bradesco: #CC092F;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    background-color: var(--dark-bg);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #141414; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--netflix-red); }
+
+/* Animações globais */
+.animate-fade-in { animation: fadeIn 1s ease-out forwards; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Controle de visibilidade de páginas/simulação */
+.page-section       { display: block; }
+.hidden-page        { display: none; }
+.sim-screen         { display: none; }
+.sim-screen.active  { display: flex; flex-direction: column; }
+
+/* ── Tema Claro ─────────────────────────────────────────── */
+body.light-mode { background-color: #f9fafb !important; color: #111827 !important; }
+body.light-mode #main-view { background-color: #ffffff; }
+
+body.light-mode #sobre { background-color: #f3f4f6; }
+body.light-mode #sobre p { color: #374151; }
+
+body.light-mode #prevencao { background-color: #ffffff; }
+body.light-mode #prevencao h2,
+body.light-mode #prevencao p { color: #111827; }
+body.light-mode #prevencao .text-gray-400 { color: #4b5563; }
+
+body.light-mode .netflix-card { background-color: #f3f4f6; color: #111827; border-color: #e5e7eb; }
+body.light-mode .netflix-card p { color: #4b5563; }
+
+body.light-mode #multimedia { background-color: #f3f4f6; border-color: #e5e7eb; }
+body.light-mode #multimedia h2,
+body.light-mode #multimedia p { color: #111827; }
+body.light-mode #multimedia .text-gray-400 { color: #4b5563; }
+
+body.light-mode .audio-player { background-color: #ffffff; border-color: #e5e7eb; }
+body.light-mode .audio-player p { color: #111827; }
+body.light-mode .audio-player audio { filter: none; }
+
+body.light-mode .bg-zinc-900\/50 { background-color: rgba(243,244,246,0.8); border-color: #e5e7eb; color: #111827; }
+body.light-mode .bg-zinc-900\/50 h4 { color: #111827; }
+body.light-mode .bg-zinc-900\/50 p,
+body.light-mode .bg-zinc-900\/50 ul { color: #374151; }
+
+body.light-mode footer { background-color: #f3f4f6; color: #111827; border-color: #e5e7eb; }
+body.light-mode footer p { color: #4b5563; }
+
+body.light-mode .glass-nav { background: rgba(255,255,255,0.9); border-color: #e5e7eb; }
+body.light-mode .glass-nav a { color: #374151; }
+body.light-mode .glass-nav a:hover { color: #dc2626; }
+body.light-mode .bank-app { box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+
+/* ── Tema Escuro (app bancário) ─────────────────────────── */
+#success-container { transition: background-color 0.3s ease, color 0.3s ease; }
+#success-container.theme-dark { background-color: #121212 !important; }
+#success-container.theme-dark #success-subtitle { color: #a1a1aa !important; }
+
+#success-container.theme-dark .bank-app {
+    background-color: #1c1c1e !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6) !important;
+    border: 1px solid #2c2c2e;
+}
+#success-container.theme-dark .bank-app [style*="background:white"],
+#success-container.theme-dark .bank-app [style*="background: white"],
+#success-container.theme-dark .bank-app [style*="background:#fff"],
+#success-container.theme-dark .bank-app [style*="background: #fff"],
+#success-container.theme-dark .bank-app #panel-conta,
+#success-container.theme-dark .bank-app #panel-protecao,
+#success-container.theme-dark .bank-app #panel-perfil {
+    background-color: #1c1c1e !important;
+    background: #1c1c1e !important;
+    color: #ffffff !important;
+}
+#success-container.theme-dark .bank-app div,
+#success-container.theme-dark .bank-app [style*="border-bottom"],
+#success-container.theme-dark .bank-app [style*="border-top"] {
+    border-bottom-color: #2c2c2e !important;
+    border-top-color: #2c2c2e !important;
+    border-color: #2c2c2e !important;
+}
+#success-container.theme-dark .bank-app .app-tab {
+    background-color: #252525 !important;
+    color: #a1a1aa !important;
+    border-bottom-color: #3a3a3c !important;
+}
+#success-container.theme-dark .bank-app .app-tab.active {
+    background-color: #1c1c1e !important;
+    color: #ff4d6d !important;
+    border-bottom: 2px solid #ff4d6d !important;
+}
+#success-container.theme-dark .bank-app div[style*="background:#f5f5f5"],
+#success-container.theme-dark .bank-app div[style*="background: #f5f5f5"] {
+    background-color: #2c2c2e !important;
+    background: #2c2c2e !important;
+}
+#success-container.theme-dark .bank-app .app-btn-small {
+    background-color: #2c2c2e !important;
+    background: #2c2c2e !important;
+    color: #ffffff !important;
+}
+#success-container.theme-dark .bank-app div[style*="background:#fff8f8"],
+#success-container.theme-dark .bank-app div[style*="background: #fff8f8"] {
+    background-color: rgba(204,9,47,0.15) !important;
+    background: rgba(204,9,47,0.15) !important;
+    border-color: rgba(204,9,47,0.4) !important;
+}
+#success-container.theme-dark .bank-app p,
+#success-container.theme-dark .bank-app span,
+#success-container.theme-dark .bank-app h4,
+#success-container.theme-dark .bank-app label { color: #e5e5ea !important; }
+
+#success-container.theme-dark .bank-app [style*="color:#CC092F"],
+#success-container.theme-dark .bank-app [style*="color: #CC092F"] { color: #ff4d6d !important; }
+#success-container.theme-dark .bank-app [style*="color:#ef4444"],
+#success-container.theme-dark .bank-app [style*="color: #ef4444"] { color: #ff5a5a !important; }
+#success-container.theme-dark .bank-app [style*="color:#22c55e"],
+#success-container.theme-dark .bank-app [style*="color: #22c55e"] { color: #4ade80 !important; }
+
+#success-container.theme-dark .bank-app .perfil-input {
+    background-color: #2c2c2e !important;
+    border-color: #3a3a3c !important;
+    color: #ffffff !important;
+}
+#success-container.theme-dark .bank-app .empty-state { color: #8e8e93 !important; }
+
+#success-container.theme-dark .bank-app #zonas-list > div,
+#success-container.theme-dark .bank-app #alertas-list > div,
+#success-container.theme-dark .bank-app .zona-item,
+#success-container.theme-dark .bank-app .alerta-item {
+    background-color: #2c2c2e !important;
+    background: #2c2c2e !important;
+    border-color: #3a3a3c !important;
+    color: #ffffff !important;
+}
+#success-container.theme-dark .bank-app #zonas-list h4,
+#success-container.theme-dark .bank-app #alertas-list h4 { color: #ffffff !important; }
+#success-container.theme-dark .bank-app #zonas-list p,
+#success-container.theme-dark .bank-app #alertas-list p,
+#success-container.theme-dark .bank-app #zonas-list span,
+#success-container.theme-dark .bank-app #alertas-list span { color: #e5e5ea !important; }
+#success-container.theme-dark .bank-app #zonas-list button,
+#success-container.theme-dark .bank-app #zonas-list .btn-delete,
+#success-container.theme-dark .bank-app #zonas-list svg { color: #ff4d6d !important; fill: currentColor; }
